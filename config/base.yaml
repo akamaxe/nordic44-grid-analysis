@@ -1,0 +1,44 @@
+# Project configuration. Paths are relative to the repository root.
+
+paths:
+  zenodo_dir: data/raw/zenodo
+  github_dir: data/raw/github
+  processed_dir: data/processed
+  results_dir: results
+
+dataset:
+  zenodo_record: 162907
+  year: 2015
+  timezone: Europe/Stockholm   # Nord Pool hours are local time (CET/CEST)
+  # Coordinates of the N44 buses, from the original toolbox (GPL-3.0); fetched, never committed.
+  geo_coordinates_url: https://raw.githubusercontent.com/ALSETLab/Nordic44-Nordpool/master/nordic44/N44_Geo_Coordinates_20151015.xlsx
+
+powerflow:
+  algorithm: nr
+  init: flat
+  tolerance_mva: 1.0e-8
+  max_iteration: 30            # pandapower's "auto" gives only 10 iterations for NR
+  calculate_voltage_angles: true
+  trafo_model: t
+  trafo_loading: power         # XFRRAT = 0: transformer ratings are MVA
+  enforce_q_lims: true         # see n44.powerflow._solve for how the limits are applied
+
+validation:
+  # Target tolerances of the load-flow comparisons
+  vm_pu: 1.0e-3
+  va_deg: 0.1
+  p_mw: 1.0                    # per branch end: within p_mw or within p_rel of the flow
+  p_rel: 0.01
+  q_mvar: 2.0                  # likewise, q_mvar or q_rel
+  q_rel: 0.02
+  losses_rel: 0.01
+  slack_p_mw: 1.0
+
+powerfactory:
+  # Override with the N44_PF_INSTALL_DIR and N44_PF_PYTHON_API environment variables.
+  install_dir: 'C:\Program Files\DIgSILENT\PowerFactory 2024'
+  python_api: 'C:\Program Files\DIgSILENT\PowerFactory 2024\Python\3.12'
+  folder: Nordic44            # folder of the PowerFactory user's root that holds the projects
+  exports_dir: powerfactory/exports
+  random_hours: 50            # validation hours drawn at random, besides the representative ones
+  seed: 2015

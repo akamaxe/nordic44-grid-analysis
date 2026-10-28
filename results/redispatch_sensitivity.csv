@@ -1,0 +1,3 @@
+outages,hours_with_redispatch,volume_twh,interzonal_twh,unresolved_hours,net_FI1_twh,net_NO1_twh,net_NO2_twh,net_NO3_twh,net_NO4_twh,net_NO5_twh,net_SE1_twh,net_SE2_twh,net_SE3_twh,net_SE4_twh
+all 71,8359,19.2,18.94,0,-0.5561,2.607,-5.637,0.0003823,-0.005231,-5.36,-0.7334,-5.725,15.4,0.01338
+all but transformer 5300-5301-1,7370,11.12,10.99,0,-0.9517,2.101,-1.905,0.001308,-0.007256,-0.9063,-0.7986,-5.793,8.257,0.001153

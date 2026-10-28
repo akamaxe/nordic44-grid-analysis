@@ -1,0 +1,15 @@
+# Direct dependencies, pinned. The full resolved set is in requirements-lock.txt.
+# pandapower 3.5.6 requires numpy<2.5 and pandas~=2.3 (pandas 3 is not supported yet).
+pandapower==3.5.6
+numpy==2.4.6
+pandas==2.3.3
+scipy==1.18.1
+networkx==3.7
+numba==0.68.0
+pyarrow==26.0.0
+matplotlib==3.11.2
+openpyxl==3.1.5
+PyYAML==6.0.3
+requests==2.34.2
+pytest==9.1.1
+ruff==0.17.2

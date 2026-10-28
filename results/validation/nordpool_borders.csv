@@ -1,0 +1,201 @@
+h,criterion,kind,name,model_mw,nordpool_mw,diff_mw
+538,winter peak demand,border,SE1->SE2,2746.51,2163.00,583.51
+538,winter peak demand,border,SE2->SE3,5819.83,6611.00,-791.17
+538,winter peak demand,border,SE3->SE4,4371.11,4371.00,0.11
+538,winter peak demand,border,SE1->FI1,-113.49,993.00,-1106.49
+538,winter peak demand,border,SE3->FI1,371.00,371.00,0.00
+538,winter peak demand,border,NO4->FI1,-26.00,-26.00,0.00
+538,winter peak demand,border,SE1->NO4,-399.01,-308.00,-91.01
+538,winter peak demand,border,SE2->NO3,-45.73,-223.00,177.27
+538,winter peak demand,border,SE2->NO4,-25.48,-114.00,88.52
+538,winter peak demand,border,SE3->NO1,-1625.21,-1452.00,-173.21
+538,winter peak demand,border,NO1->NO2,564.17,-2342.00,2906.17
+538,winter peak demand,border,NO1->NO3,-289.55,-115.00,-174.55
+538,winter peak demand,border,NO1->NO5,-6588.28,-3683.00,-2905.28
+538,winter peak demand,border,NO5->NO2,-2659.85,246.00,-2905.85
+538,winter peak demand,border,NO4->NO3,777.14,780.00,-2.86
+538,winter peak demand,border,SE1->SE3,614.01,,
+538,winter peak demand,border,SE2->FI1,1106.83,,
+538,winter peak demand,cut,snitt 1 (SE1->SE2),3360.52,2163.00,1197.52
+538,winter peak demand,cut,snitt 2 (SE2->SE3),6433.83,6611.00,-177.17
+538,winter peak demand,cut,snitt 4 (SE3->SE4),4371.11,4371.00,0.11
+8595,winter lowest demand,border,SE1->SE2,-411.04,-771.00,359.96
+8595,winter lowest demand,border,SE2->SE3,-825.59,-738.00,-87.59
+8595,winter lowest demand,border,SE3->SE4,-354.59,-353.00,-1.59
+8595,winter lowest demand,border,SE1->FI1,-311.86,-31.00,-280.86
+8595,winter lowest demand,border,SE3->FI1,809.00,809.00,0.00
+8595,winter lowest demand,border,NO4->FI1,-5.00,-5.00,0.00
+8595,winter lowest demand,border,SE1->NO4,389.44,380.00,9.44
+8595,winter lowest demand,border,SE2->NO3,1062.50,831.00,231.50
+8595,winter lowest demand,border,SE2->NO4,92.24,158.00,-65.76
+8595,winter lowest demand,border,SE3->NO1,1233.46,1412.00,-178.54
+8595,winter lowest demand,border,NO1->NO2,-533.58,-840.00,306.42
+8595,winter lowest demand,border,NO1->NO3,19.95,195.00,-175.05
+8595,winter lowest demand,border,NO1->NO5,-361.14,-53.00,-308.14
+8595,winter lowest demand,border,NO5->NO2,-481.02,-173.00,-308.02
+8595,winter lowest demand,border,NO4->NO3,87.58,144.00,-56.42
+8595,winter lowest demand,border,SE1->SE3,-88.67,,
+8595,winter lowest demand,border,SE2->FI1,281.98,,
+8595,winter lowest demand,cut,snitt 1 (SE1->SE2),-499.71,-771.00,271.29
+8595,winter lowest demand,cut,snitt 2 (SE2->SE3),-914.26,-738.00,-176.26
+8595,winter lowest demand,cut,snitt 4 (SE3->SE4),-354.59,-353.00,-1.59
+3657,summer peak demand,border,SE1->SE2,1980.49,1182.00,798.49
+3657,summer peak demand,border,SE2->SE3,5074.16,5846.00,-771.84
+3657,summer peak demand,border,SE3->SE4,2306.02,2306.00,0.02
+3657,summer peak demand,border,SE1->FI1,-254.88,1222.00,-1476.88
+3657,summer peak demand,border,SE3->FI1,1218.00,1218.00,0.00
+3657,summer peak demand,border,NO4->FI1,56.00,56.00,0.00
+3657,summer peak demand,border,SE1->NO4,22.29,-62.00,84.29
+3657,summer peak demand,border,SE2->NO3,14.38,19.00,-4.62
+3657,summer peak demand,border,SE2->NO4,63.89,-33.00,96.89
+3657,summer peak demand,border,SE3->NO1,-960.32,-784.00,-176.32
+3657,summer peak demand,border,NO1->NO2,400.11,-1470.00,1870.11
+3657,summer peak demand,border,NO1->NO3,-123.42,53.00,-176.42
+3657,summer peak demand,border,NO1->NO5,-2841.00,-971.00,-1870.00
+3657,summer peak demand,border,NO5->NO2,-1999.01,-129.00,-1870.01
+3657,summer peak demand,border,NO4->NO3,589.04,408.00,181.04
+3657,summer peak demand,border,SE1->SE3,594.10,,
+3657,summer peak demand,border,SE2->FI1,1477.06,,
+3657,summer peak demand,cut,snitt 1 (SE1->SE2),2574.59,1182.00,1392.59
+3657,summer peak demand,cut,snitt 2 (SE2->SE3),5668.25,5846.00,-177.75
+3657,summer peak demand,cut,snitt 4 (SE3->SE4),2306.02,2306.00,0.02
+4781,summer lowest demand,border,SE1->SE2,-105.89,-1239.00,1133.11
+4781,summer lowest demand,border,SE2->SE3,850.88,1099.00,-248.12
+4781,summer lowest demand,border,SE3->SE4,2064.40,2065.00,-0.60
+4781,summer lowest demand,border,SE1->FI1,-28.18,1307.00,-1335.18
+4781,summer lowest demand,border,SE3->FI1,1220.00,1220.00,0.00
+4781,summer lowest demand,border,NO4->FI1,15.00,15.00,0.00
+4781,summer lowest demand,border,SE1->NO4,150.08,13.00,137.08
+4781,summer lowest demand,border,SE2->NO3,527.46,392.00,135.46
+4781,summer lowest demand,border,SE2->NO4,68.26,156.00,-87.74
+4781,summer lowest demand,border,SE3->NO1,264.85,452.00,-187.15
+4781,summer lowest demand,border,NO1->NO2,519.52,1241.00,-721.48
+4781,summer lowest demand,border,NO1->NO3,21.17,206.00,-184.83
+4781,summer lowest demand,border,NO1->NO5,-147.21,-867.00,719.79
+4781,summer lowest demand,border,NO5->NO2,1128.86,409.00,719.86
+4781,summer lowest demand,border,NO4->NO3,169.40,120.00,49.40
+4781,summer lowest demand,border,SE1->SE3,65.04,,
+4781,summer lowest demand,border,SE2->FI1,1334.52,,
+4781,summer lowest demand,cut,snitt 1 (SE1->SE2),-40.85,-1239.00,1198.15
+4781,summer lowest demand,cut,snitt 2 (SE2->SE3),915.92,1099.00,-183.08
+4781,summer lowest demand,cut,snitt 4 (SE3->SE4),2064.40,2065.00,-0.60
+5370,highest SE2->SE3 transfer (snitt 2),border,SE1->SE2,2563.09,1889.00,674.09
+5370,highest SE2->SE3 transfer (snitt 2),border,SE2->SE3,6245.34,7317.00,-1071.66
+5370,highest SE2->SE3 transfer (snitt 2),border,SE3->SE4,4489.42,4489.00,0.42
+5370,highest SE2->SE3 transfer (snitt 2),border,SE1->FI1,-351.50,1116.00,-1467.50
+5370,highest SE2->SE3 transfer (snitt 2),border,SE3->FI1,1221.00,1221.00,0.00
+5370,highest SE2->SE3 transfer (snitt 2),border,NO4->FI1,59.00,59.00,0.00
+5370,highest SE2->SE3 transfer (snitt 2),border,SE1->NO4,-113.94,-245.00,131.06
+5370,highest SE2->SE3 transfer (snitt 2),border,SE2->NO3,-204.92,-364.00,159.08
+5370,highest SE2->SE3 transfer (snitt 2),border,SE2->NO4,46.48,-69.00,115.48
+5370,highest SE2->SE3 transfer (snitt 2),border,SE3->NO1,-1119.11,-714.00,-405.11
+5370,highest SE2->SE3 transfer (snitt 2),border,NO1->NO2,731.47,680.00,51.47
+5370,highest SE2->SE3 transfer (snitt 2),border,NO1->NO3,-389.20,16.00,-405.20
+5370,highest SE2->SE3 transfer (snitt 2),border,NO1->NO5,-1856.40,-1805.00,-51.40
+5370,highest SE2->SE3 transfer (snitt 2),border,NO5->NO2,454.58,506.00,-51.42
+5370,highest SE2->SE3 transfer (snitt 2),border,NO4->NO3,659.17,413.00,246.17
+5370,highest SE2->SE3 transfer (snitt 2),border,SE1->SE3,662.35,,
+5370,highest SE2->SE3 transfer (snitt 2),border,SE2->FI1,1468.05,,
+5370,highest SE2->SE3 transfer (snitt 2),cut,snitt 1 (SE1->SE2),3225.44,1889.00,1336.44
+5370,highest SE2->SE3 transfer (snitt 2),cut,snitt 2 (SE2->SE3),6907.70,7317.00,-409.30
+5370,highest SE2->SE3 transfer (snitt 2),cut,snitt 4 (SE3->SE4),4489.42,4489.00,0.42
+27,lowest SE2->SE3 transfer (snitt 2),border,SE1->SE2,-744.56,-1452.00,707.44
+27,lowest SE2->SE3 transfer (snitt 2),border,SE2->SE3,-2240.68,-2251.00,10.32
+27,lowest SE2->SE3 transfer (snitt 2),border,SE3->SE4,-435.37,-435.00,-0.37
+27,lowest SE2->SE3 transfer (snitt 2),border,SE1->FI1,249.58,785.00,-535.42
+27,lowest SE2->SE3 transfer (snitt 2),border,SE3->FI1,1071.00,1071.00,0.00
+27,lowest SE2->SE3 transfer (snitt 2),border,NO4->FI1,-13.00,-13.00,0.00
+27,lowest SE2->SE3 transfer (snitt 2),border,SE1->NO4,386.67,336.00,50.67
+27,lowest SE2->SE3 transfer (snitt 2),border,SE2->NO3,1106.00,819.00,287.00
+27,lowest SE2->SE3 transfer (snitt 2),border,SE2->NO4,68.58,194.00,-125.42
+27,lowest SE2->SE3 transfer (snitt 2),border,SE3->NO1,581.79,795.00,-213.21
+27,lowest SE2->SE3 transfer (snitt 2),border,NO1->NO2,-687.43,-1252.00,564.57
+27,lowest SE2->SE3 transfer (snitt 2),border,NO1->NO3,200.02,412.00,-211.98
+27,lowest SE2->SE3 transfer (snitt 2),border,NO1->NO5,-1042.36,-477.00,-565.36
+27,lowest SE2->SE3 transfer (snitt 2),border,NO5->NO2,-718.40,-153.00,-565.40
+27,lowest SE2->SE3 transfer (snitt 2),border,NO4->NO3,-33.75,41.00,-74.75
+27,lowest SE2->SE3 transfer (snitt 2),border,SE1->SE3,-222.61,,
+27,lowest SE2->SE3 transfer (snitt 2),border,SE2->FI1,535.47,,
+27,lowest SE2->SE3 transfer (snitt 2),cut,snitt 1 (SE1->SE2),-967.16,-1452.00,484.84
+27,lowest SE2->SE3 transfer (snitt 2),cut,snitt 2 (SE2->SE3),-2463.28,-2251.00,-212.28
+27,lowest SE2->SE3 transfer (snitt 2),cut,snitt 4 (SE3->SE4),-435.37,-435.00,-0.37
+1882,highest SE3->SE4 transfer,border,SE1->SE2,2609.07,1895.00,714.07
+1882,highest SE3->SE4 transfer,border,SE2->SE3,5321.95,6041.00,-719.05
+1882,highest SE3->SE4 transfer,border,SE3->SE4,5307.13,5307.00,0.13
+1882,highest SE3->SE4 transfer,border,SE1->FI1,-15.51,1169.00,-1184.51
+1882,highest SE3->SE4 transfer,border,SE3->FI1,262.00,262.00,0.00
+1882,highest SE3->SE4 transfer,border,NO4->FI1,23.00,23.00,0.00
+1882,highest SE3->SE4 transfer,border,SE1->NO4,-273.74,-152.00,-121.74
+1882,highest SE3->SE4 transfer,border,SE2->NO3,123.56,-19.00,142.56
+1882,highest SE3->SE4 transfer,border,SE2->NO4,-8.29,-112.00,103.71
+1882,highest SE3->SE4 transfer,border,SE3->NO1,-2356.87,-2234.00,-122.87
+1882,highest SE3->SE4 transfer,border,NO1->NO2,147.54,-2666.00,2813.54
+1882,highest SE3->SE4 transfer,border,NO1->NO3,-24.16,100.00,-124.16
+1882,highest SE3->SE4 transfer,border,NO1->NO5,-5770.05,-2957.00,-2813.05
+1882,highest SE3->SE4 transfer,border,NO5->NO2,-2774.44,39.00,-2813.44
+1882,highest SE3->SE4 transfer,border,NO4->NO3,756.59,775.00,-18.41
+1882,highest SE3->SE4 transfer,border,SE1->SE3,592.16,,
+1882,highest SE3->SE4 transfer,border,SE2->FI1,1184.80,,
+1882,highest SE3->SE4 transfer,cut,snitt 1 (SE1->SE2),3201.23,1895.00,1306.23
+1882,highest SE3->SE4 transfer,cut,snitt 2 (SE2->SE3),5914.10,6041.00,-126.90
+1882,highest SE3->SE4 transfer,cut,snitt 4 (SE3->SE4),5307.13,5307.00,0.13
+1109,highest Finnish import,border,SE1->SE2,388.58,-658.00,1046.58
+1109,highest Finnish import,border,SE2->SE3,1594.33,1961.00,-366.67
+1109,highest Finnish import,border,SE3->SE4,1067.90,1069.00,-1.10
+1109,highest Finnish import,border,SE1->FI1,-101.03,1281.00,-1382.03
+1109,highest Finnish import,border,SE3->FI1,1218.00,1218.00,0.00
+1109,highest Finnish import,border,NO4->FI1,-21.00,-21.00,0.00
+1109,highest Finnish import,border,SE1->NO4,379.24,251.00,128.24
+1109,highest Finnish import,border,SE2->NO3,740.35,650.00,90.35
+1109,highest Finnish import,border,SE2->NO4,112.90,171.00,-58.10
+1109,highest Finnish import,border,SE3->NO1,-657.71,-499.00,-158.71
+1109,highest Finnish import,border,NO1->NO2,-374.72,-2096.00,1721.28
+1109,highest Finnish import,border,NO1->NO3,179.01,339.00,-159.99
+1109,highest Finnish import,border,NO1->NO5,-3236.22,-1514.00,-1722.22
+1109,highest Finnish import,border,NO5->NO2,-1767.55,-44.00,-1723.55
+1109,highest Finnish import,border,NO4->NO3,260.33,190.00,70.33
+1109,highest Finnish import,border,SE1->SE3,206.85,,
+1109,highest Finnish import,border,SE2->FI1,1381.47,,
+1109,highest Finnish import,cut,snitt 1 (SE1->SE2),595.42,-658.00,1253.42
+1109,highest Finnish import,cut,snitt 2 (SE2->SE3),1801.18,1961.00,-159.82
+1109,highest Finnish import,cut,snitt 4 (SE3->SE4),1067.90,1069.00,-1.10
+539,highest NO+SE1+SE2 production (hydro proxy),border,SE1->SE2,2658.12,1946.00,712.12
+539,highest NO+SE1+SE2 production (hydro proxy),border,SE2->SE3,5575.54,6332.00,-756.46
+539,highest NO+SE1+SE2 production (hydro proxy),border,SE3->SE4,4370.39,4370.00,0.39
+539,highest NO+SE1+SE2 production (hydro proxy),border,SE1->FI1,-1.71,1193.00,-1194.71
+539,highest NO+SE1+SE2 production (hydro proxy),border,SE3->FI1,302.00,302.00,0.00
+539,highest NO+SE1+SE2 production (hydro proxy),border,NO4->FI1,-26.00,-26.00,0.00
+539,highest NO+SE1+SE2 production (hydro proxy),border,SE1->NO4,-408.73,-318.00,-90.73
+539,highest NO+SE1+SE2 production (hydro proxy),border,SE2->NO3,-17.47,-214.00,196.53
+539,highest NO+SE1+SE2 production (hydro proxy),border,SE2->NO4,-30.85,-107.00,76.15
+539,highest NO+SE1+SE2 production (hydro proxy),border,SE3->NO1,-1584.92,-1403.00,-181.92
+539,highest NO+SE1+SE2 production (hydro proxy),border,NO1->NO2,555.68,-2277.00,2832.68
+539,highest NO+SE1+SE2 production (hydro proxy),border,NO1->NO3,-287.72,-106.00,-181.72
+539,highest NO+SE1+SE2 production (hydro proxy),border,NO1->NO5,-6481.59,-3649.00,-2832.59
+539,highest NO+SE1+SE2 production (hydro proxy),border,NO5->NO2,-2584.49,248.00,-2832.49
+539,highest NO+SE1+SE2 production (hydro proxy),border,NO4->NO3,753.22,768.00,-14.78
+539,highest NO+SE1+SE2 production (hydro proxy),border,SE1->SE3,573.33,,
+539,highest NO+SE1+SE2 production (hydro proxy),border,SE2->FI1,1194.80,,
+539,highest NO+SE1+SE2 production (hydro proxy),cut,snitt 1 (SE1->SE2),3231.45,1946.00,1285.45
+539,highest NO+SE1+SE2 production (hydro proxy),cut,snitt 2 (SE2->SE3),6148.88,6332.00,-183.12
+539,highest NO+SE1+SE2 production (hydro proxy),cut,snitt 4 (SE3->SE4),4370.39,4370.00,0.39
+6949,highest branch loading,border,SE1->SE2,2859.48,2418.00,441.48
+6949,highest branch loading,border,SE2->SE3,6088.95,7114.00,-1025.05
+6949,highest branch loading,border,SE3->SE4,4715.70,4715.00,0.70
+6949,highest branch loading,border,SE1->FI1,-467.08,630.00,-1097.08
+6949,highest branch loading,border,SE3->FI1,560.00,560.00,0.00
+6949,highest branch loading,border,NO4->FI1,40.00,40.00,0.00
+6949,highest branch loading,border,SE1->NO4,-374.62,-380.00,5.38
+6949,highest branch loading,border,SE2->NO3,241.03,2.00,239.03
+6949,highest branch loading,border,SE2->NO4,-1.93,-127.00,125.07
+6949,highest branch loading,border,SE3->NO1,17.71,386.00,-368.29
+6949,highest branch loading,border,NO1->NO2,878.29,37.00,841.29
+6949,highest branch loading,border,NO1->NO3,-560.46,-192.00,-368.46
+6949,highest branch loading,border,NO1->NO5,-2516.15,-1675.00,-841.15
+6949,highest branch loading,border,NO5->NO2,-526.18,315.00,-841.18
+6949,highest branch loading,border,NO4->NO3,887.63,758.00,129.63
+6949,highest branch loading,border,SE1->SE3,650.20,,
+6949,highest branch loading,border,SE2->FI1,1097.92,,
+6949,highest branch loading,cut,snitt 1 (SE1->SE2),3509.68,2418.00,1091.68
+6949,highest branch loading,cut,snitt 2 (SE2->SE3),6739.15,7114.00,-374.85
+6949,highest branch loading,cut,snitt 4 (SE3->SE4),4715.70,4715.00,0.70

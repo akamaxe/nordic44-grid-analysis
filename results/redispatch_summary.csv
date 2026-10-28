@@ -1,0 +1,3 @@
+criterion,hours_with_redispatch,volume_twh,interzonal_twh,mean_mw_when_active,max_mw,unresolved_hours,failed_hours,cost_meur_at_10,cost_meur_at_20,cost_meur_at_30
+N-0 (RATE A),4671,5.084,5.078,1088,7836,0,0,50.78,101.6,152.3
+N-0 and N-1 (RATE A / RATE B),8359,19.2,18.94,2297,1.207e+04,0,0,189.4,378.8,568.3

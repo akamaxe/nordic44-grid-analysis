@@ -1,0 +1,4 @@
+h,cost_own_eur,cost_powerfactory_eur,max_dtech_mw,max_dcongestion_eur,energy_own_eur,energy_powerfactory_eur,binding_branches,max_congestion_eur
+538,1.17201e+06,1.17201e+06,0.004,8.17124e-14,20,20,2,15
+3657,752355,752355,0.00242857,1.13687e-13,20,20,1,15
+5370,696970,696970,0.001,0,20,20,0,0

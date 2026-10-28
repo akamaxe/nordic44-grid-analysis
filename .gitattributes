@@ -1,0 +1,7 @@
+* text=auto eol=lf
+
+# PSS/E RAW fixtures are stored byte-for-byte
+*.raw -text
+*.xlsx binary
+*.png binary
+*.pfd binary

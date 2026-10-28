@@ -1,0 +1,61 @@
+h,criterion,date,hour
+538,winter peak demand,2015-01-23,10
+8595,winter lowest demand,2015-12-25,3
+3657,summer peak demand,2015-06-02,9
+4781,summer lowest demand,2015-07-19,5
+5370,highest SE2->SE3 transfer (snitt 2),2015-08-12,18
+27,lowest SE2->SE3 transfer (snitt 2),2015-01-02,3
+1882,highest SE3->SE4 transfer,2015-03-20,10
+1109,highest Finnish import,2015-02-16,5
+539,highest NO+SE1+SE2 production (hydro proxy),2015-01-23,11
+6949,highest branch loading,2015-10-17,13
+131,random,2015-01-06,11
+211,random,2015-01-09,19
+524,random,2015-01-22,20
+768,random,2015-02-02,0
+1023,random,2015-02-12,15
+1138,random,2015-02-17,10
+1351,random,2015-02-26,7
+1366,random,2015-02-26,22
+1421,random,2015-03-01,5
+1940,random,2015-03-22,20
+2208,random,2015-04-03,0
+2493,random,2015-04-14,21
+2533,random,2015-04-16,13
+2664,random,2015-04-22,0
+2814,random,2015-04-28,6
+2976,random,2015-05-05,0
+3113,random,2015-05-10,17
+3122,random,2015-05-11,2
+3144,random,2015-05-12,0
+3488,random,2015-05-26,8
+3765,random,2015-06-06,21
+3797,random,2015-06-08,5
+3936,random,2015-06-14,0
+4060,random,2015-06-19,4
+4117,random,2015-06-21,13
+4392,random,2015-07-03,0
+4665,random,2015-07-14,9
+4733,random,2015-07-17,5
+4815,random,2015-07-20,15
+5345,random,2015-08-11,17
+5597,random,2015-08-22,5
+5845,random,2015-09-01,13
+5963,random,2015-09-06,11
+5966,random,2015-09-06,14
+6033,random,2015-09-09,9
+6086,random,2015-09-11,14
+6151,random,2015-09-14,7
+6554,random,2015-10-01,2
+6724,random,2015-10-08,4
+6903,random,2015-10-15,15
+6935,random,2015-10-16,23
+7117,random,2015-10-24,13
+7547,random,2015-11-11,11
+7626,random,2015-11-14,18
+7914,random,2015-11-26,18
+8187,random,2015-12-08,3
+8264,random,2015-12-11,8
+8282,random,2015-12-12,2
+8432,random,2015-12-18,8
+8550,random,2015-12-23,6

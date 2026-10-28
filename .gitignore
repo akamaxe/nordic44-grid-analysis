@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.pytest_cache/
+.ruff_cache/
+build/
+dist/
+.ipynb_checkpoints/
+
+# Data: downloaded or derived, never versioned (see data/README.md)
+data/raw/
+data/processed/
+
+# Large generated results (figures and small summary tables are committed)
+results/annual/
+results/**/*.parquet
+results/n1/*.npy
+results/validation/powerfactory_buses.csv
+results/validation/powerfactory_branches.csv
+
+# Editors and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

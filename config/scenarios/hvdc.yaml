@@ -1,0 +1,13 @@
+# HVDC option for snitt 2, a point-to-point VSC link on the same corridor, sized like
+# SydVastlanken (2 x 600 MW). Its set-point is chosen every hour by the redispatch, and its
+# trip is one more contingency. Each converter holds its bus voltage within its reactive
+# limit.
+name: hvdc
+title: 1,200 MW VSC link Hjalta-Ringhals
+hvdc:
+  - from: 3100
+    to: 3359
+    capacity_mw: 1200
+    losses: 0.02          # both converters together, share of the transmitted power
+    q_limit_mvar: 400     # per converter
+    v_set_pu: 1.0

@@ -1,0 +1,11 @@
+# New industrial demand in the north (steel, hydrogen, batteries), swept
+# from 1 to 10 GW. The new load sits at the main SE1 and SE2 buses; the energy it takes is
+# produced by the generators of the other zones, in proportion to their output, so the
+# north exports less and, for large loads, imports.
+name: north_load
+title: new industrial load in SE1 and SE2
+add_load:
+  sweep_mw: [1000, 2000, 3000, 4000, 5000, 6000, 8000, 10000]
+  buses: {3115: 0.6, 3249: 0.4}     # share of the new load at each bus
+  power_factor: 0.95
+  supplied_by: [NO1, NO2, NO3, NO4, NO5, SE3, SE4, FI1]

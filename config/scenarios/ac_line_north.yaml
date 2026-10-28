@@ -1,0 +1,9 @@
+# AC reinforcement at the N-1 bottleneck. The intact network binds on
+# Hjalta-Ringhals (P2), but N-1 binds north of Hjalta: losing Hjalta-Grundfors overloads
+# Porjus-Grundfors and Hjalta-Porjus (P3, P4). A second Hjalta-Grundfors circuit keeps
+# Grundfors connected southwards after the loss of one.
+name: ac_line_north
+title: second AC circuit Hjalta-Grundfors
+add_lines:
+  - copy: [3100, 3249, "1"]   # circuit 1: RATE A/B 2000/2500 MVA
+    ckt: "2"

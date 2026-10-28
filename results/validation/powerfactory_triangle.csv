@@ -1,0 +1,6 @@
+pair,variant,max_dvm_pu,max_dva_deg,max_dp_branch_mw,max_dq_branch_mvar,max_dq_plant_mvar,max_dloading_pct,losses_rel,max_abs_slack_dp_mw,rmse_dvm_pu,hours,within_tolerance,limited_plants_match
+pp-ref,-,7.49e-06,0.000719,0.254,1.14,0.078,0.0299,9.54e-05,0.0351,2.25e-06,60,60,60
+pf-ref,imported,0.000887,0.00553,0.698,3.61,2.73,0.113,0.000147,0.045,0.000141,60,0,60
+pf-pp,imported,0.000883,0.00553,0.599,2.6,2.73,0.0939,0.000107,0.0254,0.000141,60,0,60
+pf-ref,exact,7.48e-06,0.000718,0.254,1.14,0.0781,0.0299,9.71e-05,0.0359,2.25e-06,60,60,60
+pf-pp,exact,5.19e-08,1.33e-05,0.00031,0.000748,0.000941,3.08e-05,2.14e-06,0.000821,1.59e-08,60,60,60

@@ -1,0 +1,6 @@
+h,outages,no_solution_powerfactory,convergence_agrees,compared,max_dp_mw,max_dq_mvar,max_dvm_pu,max_dloading_pf_convention_pct,top10_same_set,top10_same_order
+175,71,1,71,70,0.000655,0.000865,5.22e-07,6.24e-05,10,True
+538,71,3,71,68,0.000775,0.000813,5.42e-07,5.85e-05,10,True
+5370,71,0,71,71,0.000682,0.000878,5.36e-07,6.53e-05,10,True
+5600,71,1,71,70,0.000692,0.000732,5.22e-07,6.4e-05,10,True
+6949,71,3,71,68,0.000727,0.000722,5.42e-07,7.69e-05,10,True

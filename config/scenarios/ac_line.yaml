@@ -1,0 +1,7 @@
+# Reinforcement of snitt 2, the most limiting Swedish cut (P2), on its most loaded corridor,
+# Hjalta (SE2) - Ringhals (SE3), with a third 400 kV circuit.
+name: ac_line
+title: third AC circuit Hjalta-Ringhals
+add_lines:
+  - copy: [3100, 3359, "2"]   # circuit 2: X = 0.23 p.u., RATE A/B/C 1200/2000/2500 MVA
+    ckt: "3"

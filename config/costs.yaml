@@ -1,0 +1,48 @@
+# Generation cost assumptions for the OPF and redispatch studies.
+#
+# N44 carries no cost data, and each of its 18 generator buses is an equivalent of many real
+# plants. Each bus is given the technology that dominates the part of the Nordic system it
+# stands for, and each technology a short-run marginal cost typical of 2015. These are
+# assumptions for a structural study: they set a plausible merit order (nuclear, then hydro,
+# then thermal), not real prices. Zonal prices are not reproduced or compared until the
+# ENTSO-E data are available.
+#
+# Marginal costs in EUR/MWh:
+technologies:
+  nuclear: 10.0      # fuel plus variable O&M
+  hydro: 20.0        # reservoir hydro offered at its water value, on 2015's low price level
+  thermal: 35.0      # combined heat and power, coal and condensing plants with 2015 fuel and CO2 prices
+
+# Technology of each generator bus. Machines listed under "machines" override the bus value
+# (machine id -> technology).
+plants:
+  5100: {name: TRETTEN, zone: NO1, technology: hydro}
+  5400: {name: OSLO1, zone: NO1, technology: hydro}
+  5500: {name: OSLO2, zone: NO1, technology: hydro}
+  5600: {name: KRISTIANSAND, zone: NO2, technology: hydro}
+  6000: {name: KVILLDAL, zone: NO2, technology: hydro}
+  6100: {name: BLAFALLI, zone: NO2, technology: hydro}
+  6500: {name: TRONDHEIM, zone: NO3, technology: hydro}
+  6700: {name: ROSSAGA, zone: NO4, technology: hydro}
+  5300: {name: SIMA, zone: NO5, technology: hydro}
+  3115: {name: PORJUS, zone: SE1, technology: hydro}
+  3245: {name: JARPSTROMMEN, zone: SE2, technology: hydro}
+  3249: {name: GRUNDFORS, zone: SE2, technology: hydro}
+  # The three SE3 buses hold the nuclear fleet and the rest of SE3's generation (16.8 GW in
+  # all). Forsmark and four of Ringhals's six machines are nuclear (8.4 GW, close to Sweden's
+  # 2015 fleet); Oskarshamn, the swing bus, which in the dataset absorbs SE3's balance, stands
+  # for its flexible hydro and thermal plants.
+  3000: {name: FORSMARK, zone: SE3, technology: nuclear}
+  3300: {name: OSKARSHAMN, zone: SE3, technology: hydro}
+  3359: {name: RINGHALS, zone: SE3, technology: hydro, machines: {"1": nuclear, "2": nuclear, "3": nuclear, "4": nuclear}}
+  8500: {name: MALMO, zone: SE4, technology: thermal}
+  7100: {name: OULU, zone: FI1, technology: hydro}
+  # Helsinki stands for all of southern Finland: about a quarter nuclear (Loviisa,
+  # Olkiluoto), the rest combined heat and power and condensing plants.
+  7000: {name: HELSINKI, zone: FI1, technology: thermal, machines: {"1": nuclear, "2": nuclear}}
+
+# Redispatch (n44.redispatch): the objective is the volume moved, this weight per MW up or
+# down, with production costs only breaking ties (EUR/MWh).
+redispatch_premium: 2.0
+# Penalty for any overload the redispatch cannot remove (EUR/MWh): flags infeasible hours.
+overload_penalty: 10000.0

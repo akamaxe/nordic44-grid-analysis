@@ -1,0 +1,4 @@
+h,success,warnings
+538,True,warn - No further outer loop possible. | warn - OPF result does not satisfy all constraints.
+5370,True,warn - No further outer loop possible. | warn - OPF result does not satisfy all constraints.
+3657,True,warn - No further outer loop possible. | warn - OPF result does not satisfy all constraints.

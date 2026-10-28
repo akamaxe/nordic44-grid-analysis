@@ -1,0 +1,11 @@
+h,criterion,losses_mw,max_err_dc_mw,max_err_dc_comp_mw,rmse_dc_mw,rmse_dc_comp_mw,worst_branch_dc,max_angle_err_dc_deg,max_angle_err_dc_comp_deg
+538,winter peak demand,1200.272,374.288,139.200,101.272,36.432,3200-3300-1,11.206,4.423
+8595,winter lowest demand,164.023,49.678,27.068,14.746,5.732,5101-5501-1,1.935,0.359
+3657,summer peak demand,642.207,197.374,81.740,47.986,14.191,3200-3300-1,4.615,2.390
+4781,summer lowest demand,162.935,48.115,28.120,14.714,5.813,5101-5501-1,1.394,0.503
+5370,highest SE2->SE3 transfer (snitt 2),958.704,305.877,202.458,71.430,36.467,3200-3300-1,6.334,5.821
+27,lowest SE2->SE3 transfer (snitt 2),163.055,45.530,27.295,12.711,5.384,5101-5501-1,1.683,0.418
+1882,highest SE3->SE4 transfer,992.937,304.967,97.233,77.436,23.248,3200-3300-1,7.656,3.238
+1109,highest Finnish import,309.705,84.714,34.907,29.748,8.535,3200-3300-1,3.252,0.526
+539,highest NO+SE1+SE2 production (hydro proxy),1132.170,349.475,132.757,95.604,33.343,3200-3300-1,10.631,3.743
+6949,highest branch loading,1205.654,369.763,249.117,91.797,49.243,3200-3300-1,9.299,7.733

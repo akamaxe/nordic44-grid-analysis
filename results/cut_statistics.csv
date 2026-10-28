@@ -1,0 +1,4 @@
+cut,branches,sum_rate_a_mw,model_mean_mw,model_p95_mw,model_max_mw,nordpool_mean_mw,nordpool_max_mw,hours_ge_80,hours_ge_90,hours_ge_100,most_overloaded_branch,its_hours_ge_100
+snitt 1 (SE1->SE2),4,6400,1602,3070,3613,480,3023,3911,2575,1394,line 3100-3115-1,1164
+snitt 2 (SE2->SE3),8,9700,3635,6271,7024,3820,7317,4987,4055,3102,line 3100-3359-2,3102
+snitt 4 (SE3->SE4),5,8300,2839,4596,5307,2841,5307,699,104,7,line 3300-8500-1,7

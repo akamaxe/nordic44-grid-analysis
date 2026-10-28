@@ -1,0 +1,14 @@
+metric,value
+hours_solved,8760
+hours_converged,8760
+flat_start_share,1
+max_dvm_pu,3.25668e-05
+max_dva_deg,0.00111974
+max_slack_dp_mw,0.12103
+max_plant_dq_mvar,0.138296
+losses_mean_mw,528.045
+losses_max_mw,1345.67
+losses_share_of_load_pct,1.32461
+hours_any_overload,4794
+loop_residual_max_mw,14.8673
+loop_mean_abs_mw,1444.85

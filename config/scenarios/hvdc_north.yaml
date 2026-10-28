@@ -1,0 +1,13 @@
+# HVDC option at the N-1 bottleneck, the same 1,200 MW VSC link as in
+# hvdc.yaml, but from Grundfors (SE2), where the N-1 limits of P3 and P4 bind, to Ringhals
+# (SE3), bypassing the SE1/SE2 lines. On a sample of hours it relieved the N-1 redispatch more
+# than links from Grundfors or Porjus to Forsmark.
+name: hvdc_north
+title: 1,200 MW VSC link Grundfors-Ringhals
+hvdc:
+  - from: 3249
+    to: 3359
+    capacity_mw: 1200
+    losses: 0.02
+    q_limit_mvar: 400
+    v_set_pu: 1.0

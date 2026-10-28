@@ -1,0 +1,15 @@
+# New northern load with new wind, 5 GW of new load together with new wind in SE1
+# and SE2. Without hourly wind profiles (they need the ENTSO-E data), wind is held at a fixed
+# output in every hour, as a bounding case: 4 GW (an average hour for some 10 GW installed)
+# and 8 GW (a windy hour). The balance between new load and new wind is produced, or
+# displaced, in the other zones, in proportion to their output.
+name: north_wind
+title: 5 GW new load and new wind in SE1 and SE2
+add_load:
+  sweep_mw: [5000]
+  buses: {3115: 0.6, 3249: 0.4}
+  power_factor: 0.95
+  supplied_by: [NO1, NO2, NO3, NO4, NO5, SE3, SE4, FI1]
+add_wind:
+  sweep_mw: [4000, 8000]            # output in every hour
+  buses: {3115: 0.5, 3249: 0.5}
