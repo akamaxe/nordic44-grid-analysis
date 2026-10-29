@@ -11,6 +11,7 @@ the PSS/E consistency checks.
 | Hourly PSS/E snapshots of 2015 and daily Nord Pool files | Zenodo record [162907](https://doi.org/10.5281/zenodo.162907), *Nordic44 – 2015 Powerflow Data* (Vanfretti et al.), in 53 weekly archives `Week1.zip` … `Week53.zip` | CC BY-NC 4.0 | All analyses |
 | Base case `N44_BC.raw` | Same record, `Models.zip` → `PSSE Base case/` | CC BY-NC 4.0 | Tests and reference |
 | Bus coordinates `N44_Geo_Coordinates_20151015.xlsx` | [ALSETLab/Nordic44-Nordpool](https://github.com/ALSETLab/Nordic44-Nordpool) | GPL-3.0 | Maps only, fetched at run time and never committed |
+| Prices, capacities, flows, load and generation of 2015 and 2025 | [ENTSO-E Transparency Platform](https://transparency.entsoe.eu), REST API | ENTSO-E's terms of use, with attribution | Market comparisons (P1–P4), wind profile (P5), 2025 snapshots (P7), downloaded with a free token and never committed |
 
 `python scripts/01_download_data.py` downloads about 527 MB into `data/raw/` and checks every
 archive against the MD5 published by Zenodo. `iTesla_Platform.zip` (Modelica, April–July only)
@@ -214,6 +215,35 @@ inconsistencies.
   to 575 MW. SE3, which holds the swing bus, then misses its target (validation log,
   entry 4).
 
+## ENTSO-E data
+
+`scripts/18_download_entsoe.py` downloads the ENTSO-E series and writes them on the snapshot
+hour index. It needs a security token, which any registered user of the Transparency Platform
+can ask for (My Account Settings, then Web API Security Token). The token goes in the
+`ENTSOE_API_KEY` environment variable and is never written to disk by the scripts.
+
+```powershell
+# Windows, for the current user (open a new terminal afterwards)
+[Environment]::SetEnvironmentVariable("ENTSOE_API_KEY", "<your token>", "User")
+```
+
+```bash
+# Linux and macOS, for the current shell
+export ENTSOE_API_KEY=<your token>
+```
+
+The answers are cached in `data/raw/entsoe/<year>/`, about 180 requests and half an hour the
+first time. Areas are the bidding zones by their EIC codes (`n44.io.entsoe.AREAS`). Without a
+token the pipeline skips these steps and the rest still runs.
+
+Coverage is nearly complete. In 2015 the Swedish borders miss one day of offered capacity and
+three days of physical flows, and SE1–SE4 miss two days of load and four of wind. These gaps
+stay missing and are left out of the comparisons, except in the wind profile, which
+interpolates them. In 2025 a few minor production types are
+mostly empty (storage in Finland, solar in NO3, offshore wind in NO2) and count as zero, and
+the two Russian links have no data, as they carried nothing. Since October 2025 part of the
+data comes in 15-minute steps, which are averaged to hours.
+
 ## Derived tables (`data/processed/`)
 
 | File | Content |
@@ -225,6 +255,9 @@ inconsistencies.
 | `nordpool_{consumption,production,exchange}.parquet` | Nord Pool data aligned with the snapshots (rows = h) |
 | `psse_summary_{areas,flags}.parquet` | `PSSE_in_out.xlsx` of every day |
 | `calendar.parquet` | date, hour, local and UTC time of each h |
+| `entsoe_2015_{prices,capacity,physical,scheduled,load,generation}.parquet` | ENTSO-E data of 2015 on the hour index (rows = h, borders as "A->B" in both directions) |
+| `entsoe_2025_{load,generation,physical}.parquet` | ENTSO-E data of 2025 for the 2025 snapshots |
+| `snapshots_2025/*.parquet` | snapshot tables of 2025 fitted with the dataset's method (`scripts/20_fit_snapshots.py`) |
 
 ## Citation
 

@@ -44,6 +44,16 @@ projects are included, ready to open.
   Pool by construction, yet the NO1–NO2–NO5 triangle carries a 1.4 GW loop flow that Nord
   Pool does not show, and two artificial ties re-route Finland's import. Snitt 2, measured as
   a cut, is within 5 % of Nord Pool.
+- **Against ENTSO-E's data, the equivalent's limits hold on two cuts out of three.** On snitt 1
+  and snitt 4 the capacity the TSOs gave the market in 2015 is within 13 % of the equivalent's
+  N-1 capability, but on snitt 2 it is twice as large (6.5 against 3.2 GW), so the equivalent
+  overstates snitt 2's congestion. The DC-OPF finds Finland's price step (29.2 against a real
+  29.7 EUR/MWh) and none of the smaller separations inside Scandinavia. The dataset's border
+  exchanges turn out to be measured physical flows.
+- **On the 2015 grid, the flows of 2025 leave little that is secure.** Snapshots of 2025 built
+  from ENTSO-E data with the dataset's own method, which reproduces the 2015 snapshots, raise
+  snitt 2's mean flow from 3.6 to 5.6 GW. The market dispatch is then N-1 secure in 121 hours
+  instead of 324, and in 17 winter hours the intact grid has no AC solution at all.
 
 ## Contents
 
@@ -57,6 +67,7 @@ projects are included, ready to open.
   - [P3. Critical contingencies and N-1 margins](#p3-which-contingencies-are-critical-and-how-much-n-1-margin-is-there)
   - [P4. Nodal prices and redispatch](#p4-nodal-prices-and-the-redispatch-the-market-dispatch-needs)
   - [P5. Reinforcements and new northern demand](#p5-reinforcements-and-new-northern-demand)
+  - [P7. The 2015 grid with the flows of 2025](#p7-the-2015-grid-with-the-flows-of-2025)
 - [Conclusions](#conclusions)
 - [Limitations and next steps](#limitations-and-next-steps)
 - [Reproducing the results](#reproducing-the-results)
@@ -73,7 +84,7 @@ kraftnät supervises these corridors as transfer sections (*snitt*). The market 
 into four bidding zones along them, and their limits shape prices, redispatch and investment.
 
 This project studies that system on Nordic 44 (N44) with an open dataset of hourly snapshots
-of 2015 matched to Nord Pool's market data. It answers six questions.
+of 2015 matched to Nord Pool's market data. It answers seven questions.
 
 - **P1.** How accurately does a 44-bus equivalent reproduce the inter-zonal flows recorded by
   Nord Pool, and where and why does it fail?
@@ -87,6 +98,8 @@ of 2015 matched to Nord Pool's market data. It answers six questions.
   corridor, in AC or HVDC, and with new industrial load and wind in the north?
 - **P6.** Which differences appear between pandapower, PowerFactory and PSS/E for the same
   network, and which modelling decisions explain them?
+- **P7.** How would the 2015 grid cope with the flows of a recent year, built from public data
+  with the dataset's own method?
 
 P6 is answered in [Validation](#validation-p6) and the others in [Results](#results).
 
@@ -127,6 +140,12 @@ Nord Pool's daily files and PSS/E's per-hour summary. Three quirks of the data m
 The dataset, its construction and the Nord Pool files are described in
 [data/README.md](data/README.md).
 
+The ENTSO-E Transparency Platform supplies what the dataset lacks. For 2015 it gives the
+day-ahead prices, the capacity the TSOs offered to the day-ahead market on each border, and
+the physical flows and scheduled exchanges. For 2025 it gives each zone's load and generation
+and the physical flows on every border and link. Downloading them needs a free token (see
+[Reproducing the results](#reproducing-the-results)).
+
 ## Methods
 
 Every step is a numbered script in `scripts/`, and the library code is in `src/n44/`. The
@@ -155,6 +174,12 @@ details and the equations are in [docs/methods.md](docs/methods.md).
   redispatch finds the smallest volume that makes the market dispatch secure.
 - **Scenarios.** Reinforcements, new northern load and new wind go through the same chain on
   every seventh hour of 2015.
+- **Market data.** The ENTSO-E series are averaged to hours and put on the dataset's hour
+  index, with the same handling of the two clock-change days.
+- **Snapshots for another year.** The dataset's method is written again on the project's
+  solver. Each zone's loads and generation are scaled to the market data, and each hour is
+  solved with area-interchange control and tap stepping. On 2015's own data it reproduces the
+  dataset's snapshots, and it builds the snapshots of 2025 on the 2015 grid.
 
 | Step | Scripts | What they do |
 |---|---|---|
@@ -165,6 +190,8 @@ details and the equations are in [docs/methods.md](docs/methods.md).
 | N-1 | `11_n1_security.py`, `12_transfer_margins.py` | AC N-1 of every hour and the cuts' N-1 capability (P3) |
 | Market | `14_opf_prices.py`, `15_redispatch.py` | DC-OPF with nodal prices, and the N-1 redispatch (P4) |
 | Scenarios | `16_scenarios.py` | reinforcements, new load and new wind (P5) |
+| ENTSO-E | `18_download_entsoe.py`, `19_market_comparison.py` | download the ENTSO-E data, and compare 2015's capacities, flows and prices with the dataset and the model (P1–P4) |
+| 2025 | `20_fit_snapshots.py`, `21_year_2025.py` | rebuild the snapshots with the dataset's method, check it on 2015, and run 2025 on the 2015 grid (P7) |
 | PowerFactory | `10_validate_powerfactory.py`, `13_validate_powerfactory_n1.py`, `17_validate_powerfactory_opf.py` | load flow, N-1 and DC-OPF against PowerFactory (P6) |
 
 ## Validation (P6)
@@ -323,10 +350,15 @@ overlap.
 
 N44 is therefore adequate for zone balances, for the SE3–SE4 border and for the Swedish
 north–south transfer measured as a cut. It is not adequate for border-level flows in southern
-Norway or on SE1–FI, and results there describe the equivalent rather than the real grid. The
-dataset does not say whether Nord Pool's exchange values are physical or scheduled flows. If
-they are scheduled, part of every border error is the gap between commercial and physical
-flows.
+Norway or on SE1–FI, and results there describe the equivalent rather than the real grid.
+
+ENTSO-E's data settle what kind of flow the dataset holds (`results/exchange_type.csv`). On
+13 of the 15 borders between modelled zones, Nord Pool's exchange is within 31 MW of
+ENTSO-E's physical flow on average, with a correlation of 0.95 or more, and 100 to 340 MW
+away from the scheduled exchanges. The dataset holds measured physical flows, so the border
+errors above belong to the equivalent and not to a gap between commercial and physical flows.
+The two borders that fit less well, NO1→NO2 (176 MW) and NO1→NO5 (49 MW), are in the triangle
+where the model's loop sits.
 
 ### P2. Which corridors limit the north–south transfer?
 
@@ -361,8 +393,13 @@ transformer 5400–5402 (1,577 h) and transformer 6000–6001 between NO2 and NO
 
 The equivalent's ratings inflate these counts. A 44-bus equivalent concentrates several real
 circuits in one branch rated, for instance, 1,200 MVA, so the counts show where the equivalent
-concentrates the north–south flow. They are not real operating violations. Comparing the cut
-flows with the 2015 transfer capacities (NTC, from ENTSO-E) is the next step.
+concentrates the north–south flow. They are not real operating violations. The capacity the
+TSOs gave the day-ahead market in 2015 (ENTSO-E) shows how far apart the two are. On SE2→SE3
+it was 6,500 MW in the median hour and 4,400 to 7,100 MW over the year, and the market used
+all of it in 610 hours, 555 of them with a higher price in SE3. SE3→SE4 was full in 747 hours
+and SE1→SE2 in 15. The real corridors were congested in about 7 % of the year, where the
+equivalent's snitt 2 sits at RATE A in 35 %. P3 compares these capacities with the
+equivalent's N-1 capability.
 
 Overload hours cluster between 06:00 and 22:00. By month they peak in June (576 h), October
 (552), January (506) and November (484), and they are fewest in September (121), April (227)
@@ -485,9 +522,24 @@ loss of Hjälta–Grundfors (71 of the 100 hours) or the reverse.
 
 The elements that set snitt 2's capability sit north of the cut. They are the SE1/SE2 lines
 that dominate the N-1 ranking, not the Hjälta–Ringhals circuits that bind in the intact
-network (P2). The limit belongs to the equivalent. Nord Pool's SE2→SE3 flow reached 7,317 MW
-in 2015, so the real corridor was operated securely at more than twice the equivalent's median
-capability, and the gap comes from the equivalent's ratings.
+network (P2).
+
+The real counterpart of this capability is the capacity the TSOs offered to the day-ahead
+market on each cut's border, which ENTSO-E publishes hour by hour (`results/ntc_cuts.csv`).
+
+| Cut | Capacity offered, median (min–max) | Hours the market used all of it | Equivalent's N-1 capability, median | Ratio |
+|---|---|---|---|---|
+| snitt 1 (SE1→SE2) | 2,900 MW (1,800–3,300) | 15 | 3,191 MW | 0.91 |
+| snitt 2 (SE2→SE3) | 6,500 MW (4,400–7,100) | 610 | 3,186 MW | **2.04** |
+| snitt 4 (SE3→SE4) | 4,800 MW (2,700–5,200) | 747 | 5,523 MW | 0.87 |
+
+On snitt 1 and snitt 4 the equivalent's capability is within 13 % of what the TSOs offered.
+On snitt 2 the TSOs offered twice the equivalent's median capability, and Nord Pool's flow
+reached 7,317 MW. The equivalent's SE1/SE2 branches are rated too low for the real snitt 2, so
+its 5,991 hours above capability, and the redispatch of P4, overstate what the real 2015 grid
+needed.
+
+![Capacity offered to the market against the equivalent's N-1 capability](results/figures/ntc_cuts.png)
 
 An AC search on the representative hours (`results/transfer_margins_ac_check.csv`) agrees with
 DC on snitt 1 and 2, with median N-1 differences of −41 and +9 MW and at most 190 and 299 MW.
@@ -500,9 +552,13 @@ meet at the swing bus 3300, which books the transfer's extra losses in AC.
 
 Under transparent cost assumptions (nuclear 10, hydro 20, thermal 35 EUR/MWh), the DC-OPF
 separates only Finland, which averages 29.2 EUR/MWh against the hydro water value of 20
-everywhere else. A single water value lets an OPF route around every Scandinavian constraint
-by moving hydro, so the price differences inside Sweden and Norway need the market's own
-zonal prices, which wait for the ENTSO-E data.
+everywhere else. The real day-ahead prices of 2015 (ENTSO-E) put Finland at 29.7 EUR/MWh and
+the other zones between 19.8 and 22.9, so the model finds the one large price step. It misses
+the smaller ones. In the market every border separated prices at some point, the
+Norway–Sweden borders and NO1–NO3 in 1,500 to 4,100 hours and snitt 2 and snitt 4 in about
+660 hours each, while the OPF separates none of them. A single water value lets an OPF route
+around every Scandinavian constraint by moving hydro, and real producers value water
+differently by zone and by hour.
 
 The redispatch depends less on these assumptions. Making the market dispatch N-1 secure takes
 19.2 TWh of redispatch over 2015 (5.6 % of demand), in 8,359 hours, and the intact network
@@ -527,6 +583,14 @@ move by up to 2.3 EUR/MWh, and SE4, farthest from the marginal hydro, sits about
 above the north.
 
 ![Nodal prices and binding branches](results/figures/opf_prices.png)
+
+The market's prices are compared in `results/market_prices.csv` and
+`results/market_price_borders.csv`. The OPF separates Finland in 6,820 hours, where the market
+priced it apart from SE3 in 4,120, and hour by hour the two price differences barely
+correlate (0.14). Finland's mean price comes out right partly by chance, because the assumed
+costs set it.
+
+![Market prices against the DC-OPF's nodal prices](results/figures/market_prices.png)
 
 #### Redispatch
 
@@ -606,7 +670,9 @@ the real redispatch. What carries over is where and when it is needed.
   in 9 % of them, with 32 more hours that have no AC solution at all.
 - **New northern wind**, added to 5 GW of new load and held at a fixed output, keeps the N-1
   redispatch near the 2015 level at 4 GW (+3 %). With 8 GW the redispatch nearly doubles
-  (+86 %), with overloads that redispatch cannot remove in 34 hours.
+  (+86 %), with overloads that redispatch cannot remove in 34 hours. Following the real wind
+  of 2015 instead, 10 GW installed (3.4 GW on average) need 17 % more than the 2015 network,
+  13 % more than the fixed 4 GW.
 
 Every scenario goes through the chain of P3 and P4 on every seventh hour of 2015 (1,252 hours,
 `scripts/16_scenarios.py`, `results/scenario_comparison.csv`). On the 2015 network the sample
@@ -672,19 +738,79 @@ export from the north.
 
 #### With new wind
 
-These cases add wind at Porjus and Grundfors to 5 GW of new load, held at a fixed output.
+These cases add wind at Porjus and Grundfors to 5 GW of new load, held at a fixed output or
+following the real wind of 2015.
 
 | Case | N-0 redispatch | N-1 redispatch | Snitt 2, mean flow | Hours N-1 cannot be restored |
 |---|---|---|---|---|
 | 5 GW of new load | 5.25 TWh | 20.90 TWh | 667 MW | 0 |
 | with 4 GW of wind | 3.76 TWh | 19.91 TWh | 3,056 MW | 0 |
 | with 8 GW of wind | 21.54 TWh | 35.93 TWh | 5,227 MW | 34, and 3 without an AC solution |
+| with 10 GW of wind on the 2015 profile (3.4 GW on average) | 6.79 TWh | 22.50 TWh | 2,701 MW | 10, and 2 without an AC solution |
 
 With 8 GW of wind the north exports more than in 2015, and snitt 1 becomes a limit too (its
-market flow is above its N-1 capability in 1,845 hours). Fixed wind is a bounding case, and
-the hourly profiles that would replace it need the ENTSO-E data.
+market flow is above its N-1 capability in 1,845 hours).
+
+The last case follows the real wind of SE1 and SE2 in 2015 (ENTSO-E), scaled so that its
+windiest hour gives the 10 GW installed. It produces 3.4 GW on average, close to the 4 GW
+case, yet it needs 13 % more N-1 redispatch than that case and 81 % more N-0 redispatch. In
+windy hours the north pushes past the bottleneck as in the 8 GW case, and in calm hours the
+new load draws on the south, and the two do not cancel. Wind held at its mean output
+therefore understates the redispatch.
 
 ![Redispatch and cut flows as northern load grows](results/figures/scenarios_north.png)
+
+### P7. The 2015 grid with the flows of 2025
+
+It cannot carry them securely. Snitt 2's mean flow rises from 3.6 to 5.6 GW, the market
+dispatch is N-1 secure in 121 hours instead of 324, and in 17 hours of January and February
+the intact grid has no AC solution at all.
+
+The snapshots of 2025 come from ENTSO-E's actual load and generation per zone and its
+physical flows on every border, fitted with the dataset's own method, written again on the
+project's solver (`scripts/20_fit_snapshots.py`, details in
+[docs/methods.md](docs/methods.md#snapshots-fitted-to-market-data)). On the dataset's own
+Nord Pool data for 2015 the method reproduces the dataset's snapshots, with the snitt flows
+within 27 MW in 99 % of hours and nearly always the same taps
+(`results/fitting_check_2015.csv`). pandapower then re-solves the fitted hours of 2025 to
+1.4·10⁻⁹ p.u. The 2015 topology and machines are kept, so the generation of 2025 sits on the
+2015 equivalent's machines.
+
+Between the two years the north exports more and the south imports more. SE2's net export
+grows from 31.8 to 39.1 TWh and SE1's from 12.4 to 15.7 TWh, while SE3's net import doubles
+from 5.7 to 11.5 TWh. Finland's import falls from 16.1 to 5.2 TWh, with Olkiluoto 3 in
+service.
+
+| Over the year | 2015 | 2025 |
+|---|---|---|
+| Snitt 1, mean flow | 1,602 MW | 2,471 MW |
+| Snitt 2, mean flow (95th percentile) | 3,635 MW (6,271 MW) | 5,605 MW (7,300 MW) |
+| Snitt 4, mean flow | 2,839 MW | 3,303 MW |
+| Hours snitt 2 is above its 2015 median N-1 capability (3.2 GW) | 5,569 | 8,331 |
+| Hours with a branch above RATE A | 4,794 | 8,200 |
+| Losses, mean | 528 MW | 962 MW |
+| Hours N-1 secure | 324 | 121 |
+| Insecure outages per hour, mean | 8.4 | 23.6 |
+| Outages with a voltage below 0.90 p.u. and no overload | 4,550 | 55,884 |
+| Hours with no AC solution before any outage | 0 | 17 |
+
+The 2025 counts cover the 8,743 hours with an AC solution (`results/year2025_summary.csv`).
+The model's snitt 2 flow agrees with the market data, as ENTSO-E's physical SE2→SE3 flow
+averaged 5,771 MW in 2025. In the 17 hours without a solution the real flow averaged 7.5 GW.
+The real corridor carried it, so these hours show where the equivalent's snitt 2 is short,
+as P3 found from the offered capacities, more than they show a limit of the real grid.
+
+![Transfer through the Swedish cuts in 2015 and 2025](results/figures/year2025_cuts.png)
+
+Hjälta–Grundfors is still the worst outage, insecure in 8,449 hours
+(`results/year2025_n1_ranking.csv`). Behind it come Kristiansand–Kvilldal (5600–6000) in NO2,
+up from 1,702 to 7,346 hours, and Hjälta–Porjus. Southern Norway rises in the ranking, and
+there the export on NO2's links to Germany and Britain, built after 2015, is modelled as
+demand at its loads. Insecurity gathers in winter, with 54 and 58 insecure outages per hour
+in January and February against 14 and 13 in 2015, and outages with a low voltage alone
+become twelve times as many.
+
+![Net positions and N-1 insecurity in 2015 and 2025](results/figures/year2025_balances.png)
 
 ## Conclusions
 
@@ -694,24 +820,27 @@ the answers. The study shows which elements bind under N-1, why a cut's limit ca
 the cut, and how far a linear screening can be trusted. pandapower and PowerFactory, built
 independently from the same files, agree to their convergence tolerance and both reproduce
 PSS/E to the rounding of its files, and every difference between the tools traces back to a
-documented modelling convention.
+documented modelling convention. ENTSO-E's data put numbers on the equivalent's limits, which
+hold on snitt 1 and snitt 4 and fall short by half on snitt 2, and they let the dataset's
+method rebuild a recent year on the same grid.
 
 ## Limitations and next steps
 
 - **N44 is a 44-bus equivalent.** Its branch ratings are not the real corridor limits, and
   each generator bus aggregates many plants. Overloads, N-1 violations and redispatch volumes
   show where the equivalent concentrates flow, and they do not describe real operating
-  violations. The real snitt 2 carried up to 7.3 GW in 2015, more than twice the
-  equivalent's median N-1 capability.
+  violations. On snitt 2 the TSOs offered the market twice the equivalent's median N-1
+  capability in 2015 (6.5 against 3.2 GW), while on snitt 1 and snitt 4 the two are within
+  13 %.
 - **The annual run re-analyses PSS/E's solution of each hour.** Taps, area-slack outputs and
   voltage setpoints come from PSS/E, so the run is not an independent dispatch.
 - **Costs are assumptions** (nuclear 10, hydro 20, thermal 35 EUR/MWh). The nodal prices are
   therefore only structural, and the redispatch is reported as volume.
-- **Some comparisons wait for ENTSO-E data.** They need the 2015 transfer capacities (NTC),
-  zonal prices, the TSOs' 2015 redispatch and countertrade volumes, hourly wind profiles for
-  the wind scenario, and the data to update the snapshots to a recent year.
-- **The type of Nord Pool's exchange values is unknown.** The dataset calls them measurements
-  but does not say whether they are physical or scheduled flows.
+- **Some data are not public.** ENTSO-E holds no Nordic redispatch or countertrade volumes
+  for 2015, so the redispatch of P4 has nothing real to be compared with.
+- **The 2025 snapshots keep the 2015 grid.** New lines such as SydVästlänken and the Aurora
+  Line are missing, and each zone's 2025 generation, wind included, sits on the 2015
+  equivalent's machines in proportion to their output (P7).
 
 ## Reproducing the results
 
@@ -742,6 +871,12 @@ done are skipped, and `--force` runs them again.
 PowerFactory is optional. The comparisons read the PowerFactory results committed in
 `powerfactory/exports/`, and `--powerfactory` re-runs PowerFactory first.
 
+The steps on ENTSO-E data (18 to 21) need a free token from the ENTSO-E Transparency Platform
+in the `ENTSOE_API_KEY` environment variable, set up as described in
+[data/README.md](data/README.md#entso-e-data). Without it they are skipped and everything else
+runs. The first download takes about half an hour, and fitting and analysing 2025 about
+another hour.
+
 ## PowerFactory projects
 
 `powerfactory/Nordic44_2015.pfd` holds the base case and twelve hours of 2015 as PowerFactory
@@ -765,7 +900,7 @@ config/        paths, solver options, tolerances, cost assumptions, scenarios
 data/          dataset documentation (raw and processed data are downloaded or generated)
 docs/          methods and validation log
 src/n44/       PSS/E parser, reference model, pandapower builder, AC solver, N-1, OPF,
-               redispatch, scenarios, validation, figures
+               redispatch, scenarios, ENTSO-E client, snapshot fitting, validation, figures
 scripts/       numbered pipeline steps and run_pipeline.py
 powerfactory/  PowerFactory projects (.pfd), the scripts that drive PowerFactory, and its results
 results/       figures and summary tables
@@ -781,6 +916,10 @@ tests/         pytest suite on small fixtures from the dataset
   derived from it in small form, the test fixtures in `tests/data/`, the PowerFactory projects
   and the PowerFactory results in `powerfactory/`, all under the same licence. Details are in
   [data/README.md](data/README.md).
+- The market data of 2015 and 2025 come from the
+  [ENTSO-E Transparency Platform](https://transparency.entsoe.eu), under its terms of use. The
+  pipeline downloads them with the user's own token, and only tables and figures derived from
+  them are committed.
 - Bus coordinates for the maps come from the original toolbox,
   [ALSETLab/Nordic44-Nordpool](https://github.com/ALSETLab/Nordic44-Nordpool) (GPL-3.0). They
   are fetched at run time and not stored here.

@@ -1,6 +1,6 @@
 # Methods
 
-How each step of the analysis is computed, from the PSS/E files to the scenarios. The results
+How each step of the analysis is computed, from the PSS/E files to the 2025 snapshots. The results
 are in the [README](../README.md), and the discrepancies found on the way are in the
 [validation log](validation_log.md). Values are per unit on the PSS/E system base of
 1000 MVA and on the bus base voltages unless stated otherwise.
@@ -13,6 +13,8 @@ are in the [README](../README.md), and the discrepancies found on the way are in
 - [DC optimal power flow and nodal prices](#dc-optimal-power-flow-and-nodal-prices)
 - [Redispatch](#redispatch)
 - [Scenarios](#scenarios)
+- [ENTSO-E data](#entso-e-data)
+- [Snapshots fitted to market data](#snapshots-fitted-to-market-data)
 
 ## PSS/E parser and reference model
 
@@ -308,8 +310,10 @@ representative hours shows the loss component.
 N44 carries no costs, so `config/costs.yaml` gives each generator bus the technology that
 dominates the part of the system it stands for, with 2015-typical marginal costs of
 10 EUR/MWh for nuclear, 20 EUR/MWh for hydro (as a water value) and 35 EUR/MWh for thermal.
-They are assumptions for a structural study, not a price model. Comparing nodal prices with
-real 2015 zonal prices needs the ENTSO-E data.
+They are assumptions for a structural study, not a price model. Script 19 compares the zone
+average of the nodal prices (the plain mean over the zone's buses) with the real day-ahead
+prices of 2015, zone by zone and border by border. Prices more than 0.01 EUR/MWh apart count
+as separated.
 
 ## Redispatch
 
@@ -365,7 +369,7 @@ Each scenario in `config/scenarios/` changes every hourly case before it is solv
 | `ac_line_north` | a second Hjälta–Grundfors circuit (3100–3249), at the N-1 bottleneck north of Hjälta (P3, P4) |
 | `hvdc_north` | the same VSC link from Grundfors (SE2) to Ringhals (SE3), bypassing the SE1/SE2 lines |
 | `north_load` | 1 to 10 GW of new industrial load at Porjus (SE1) and Grundfors (SE2), with the energy produced by the other zones |
-| `north_wind` | 5 GW of new load with 4 or 8 GW of new northern wind, as fixed output (no wind profiles until the ENTSO-E data) |
+| `north_wind` | 5 GW of new load with new northern wind at Porjus and Grundfors, as a fixed 4 or 8 GW in every hour, and as 10 GW installed that follows 2015's hourly wind in SE1 and SE2 |
 
 The two `_north` options were added after the first two showed that reinforcing where the
 intact network binds barely changes the N-1 redispatch. On a sample of hours, the link from
@@ -389,3 +393,98 @@ Seven is prime to the 24 hours of a day, so the sample covers every hour of the 
 falls on every day of the week as well. On the 2015 network it reproduces the annual N-1
 redispatch of script 15 to 0.4 %. Every sixth hour, by contrast, would sample only 00, 06, 12
 and 18 h and miss the N-0 volume by 9 %.
+
+The wind profile is ENTSO-E's actual onshore wind generation in SE1 and SE2 in 2015, summed,
+with its few missing hours interpolated and divided by its largest hour. The new wind in hour
+$`h`$ is the installed capacity times that ratio. A fleet seldom reaches its installed
+capacity, so this scaling overstates the output a little, and the fixed cases stay as bounds.
+
+## ENTSO-E data
+
+`n44.io.entsoe`, scripts 18 and 19.
+
+The Transparency Platform's REST API is queried one year and one border or zone at a time,
+with a free token read from the `ENTSOE_API_KEY` environment variable. Each answer is cached
+as gzipped XML under `data/raw/entsoe/`. A time series holds periods with a start in UTC, a
+resolution of 15, 30 or 60 minutes, and numbered points. In a curve of type A03 a point holds
+until the next one. Everything is averaged to UTC hours and then put on the dataset's hour
+index $`h`$ through `n44.snapshots.calendar`, which follows the toolbox's handling of the two
+clock-change days in any year (the skipped spring hour is interpolated).
+
+| Data | Document | Years | Used for |
+|---|---|---|---|
+| day-ahead prices | A44 | 2015 | P4 |
+| capacity offered to the day-ahead market (implicit allocation) | A31 | 2015 | P2, P3 |
+| physical flows | A11 | 2015, 2025 | P1, 2025 snapshots |
+| scheduled commercial exchanges, all timeframes | A09 | 2015 | P1, P2 |
+| actual total load | A65 | 2015, 2025 | 2025 snapshots |
+| actual generation per production type | A75 | 2015, 2025 | wind profile, 2025 snapshots |
+
+Gaps of up to three hours are interpolated when the tables are written. A border counts as
+congested in an hour if the scheduled exchange reaches the offered capacity to within 1 MW.
+
+## Snapshots fitted to market data
+
+`n44.fitting`, script 20.
+
+The dataset's toolbox built each hour with PSS/E. `n44.fitting` repeats its steps on the
+reference-model solver of `n44.acpf`.
+
+1. Each exchange load takes the exchange on its link, load P equal to the export, with Q at a
+   fixed power factor (0.99 for Skagerrak, 0.95 for the others, as the files show).
+2. Each area's desired interchange $`P_\mathrm{des}`$ is its export on the borders that have
+   branches. The links carried by loads are inside the areas already.
+3. In each area the scalable loads are multiplied by one factor so that they add up to the
+   zone's consumption, Q with P, and the machines in service by one factor so that they add up
+   to its production.
+4. The power flow runs with area-interchange control and tap stepping. After each solution
+   the machines at each area-slack bus take up the area's interchange error, measured at the
+   metered end of the ties as PSS/E measures it. The swing bus takes the losses, so SE3's
+   interchange follows from the others. Each voltage-controlling transformer whose controlled
+   bus lies outside its band moves by the number of steps of size
+   $`(R_\mathrm{max} - R_\mathrm{min}) / (N_\mathrm{tap} - 1)`$ that the voltage error asks
+   for. The loop stops when every interchange is within 1 MW and every controlled voltage is in
+   its band.
+5. Each day starts from N44_BC, first solved the same way at its own $`P_\mathrm{des}`$, and
+   each hour scales the solved previous hour.
+
+The steps were read off the files themselves. A before_PF case holds exactly the scaled loads
+and machines of step 3, and between it and its after_PF case only the area-slack machines and
+the taps change. One rule shows only in the data, which is that the Finnish $`P_\mathrm{des}`$
+follows the Finnish exchange file where it disagrees with the Swedish one (48 hours on
+SE1–FI).
+
+On the dataset's own Nord Pool data for 2015, every hour converges, and the result is
+compared with the dataset's snapshots in `results/fitting_check_2015.csv`. In 175 hours the
+dataset's loads do not add up to Nord Pool's consumption, so the toolbox did not follow its
+own rule there, and those hours are left out. In the other 8,585 hours the snitt flows agree
+to 1.7 to 5.4 MW on average and within 27 MW in 99 % of hours, the bus voltages to
+4·10⁻⁵ p.u. on average, and the transformer ratios in nearly every hour. The largest
+differences are 65 MW on snitt 2 and one tap step, in a few hours. PSS/E's 10 MW interchange
+tolerance accounts for most of the rest, as it leaves its slack outputs up to that far from
+ours.
+
+For 2025 the inputs come from ENTSO-E. The consumption is the actual total load, the
+production the sum of the actual generation over all production types, and the exchanges are
+the physical flows, the type the dataset itself holds (P1). The links to neighbours that
+existed in 2015 keep their exchange loads (`zones.EXTERNAL_LINKS`). The three built since,
+NordLink and North Sea Link from NO2 and NordBalt from SE4 (`zones.NEW_LINKS`), have no
+connection bus in the equivalent, so their export is added to their zone's consumption and
+spread over its loads. On the Feda exchange load, NordLink and North Sea Link would put up to
+3.4 GW on the radial branch 5600–5620, more than three times its rating.
+
+Two departures from the toolbox follow from the data. ENTSO-E's zone balances do not match
+its flows exactly, and the area-slack buses absorb up to a few hundred megawatts in an hour
+(`results/fit_2025_zones.csv`). Chained from hour to hour as in step 5, these corrections pile
+up, an area-slack machine runs negative within a day, and the proportional scaling then drives
+the zone's other machines far beyond their limits. So in 2025 each hour scales the day's
+starting state, and only the voltages of the previous hour are carried over as the starting
+point. Second, a zone's 2025 production can exceed what its 2015 machines are rated for, and
+machines then run above PMAX in some hours, as they may in PSS/E's scaling too.
+
+The 2015 topology and machines are kept, so new lines (SydVästlänken, the Aurora Line) are
+missing, and each zone's generation of 2025, wind included, sits on the machines of the 2015
+equivalent in proportion to their output. In a few hours of 2025 the fitted case has no AC
+solution at all, even before an outage. Those hours are reported as such and left out of the
+rest. Script 21 solves every other hour with pandapower and runs the AC N-1 with the criteria
+of script 11.
