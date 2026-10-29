@@ -8,7 +8,9 @@ Scenarios (config/scenarios/*.yaml):
 - **ac_line_north, hvdc_north:** the same two options at the N-1 bottleneck north of
   Hjalta: a second Hjalta-Grundfors circuit, and the link from Grundfors to Ringhals;
 - **north_load:** new industrial load in SE1/SE2, from 1 to 10 GW;
-- **north_wind:** 5 GW of new load with 4 or 8 GW of new northern wind (fixed output).
+- **north_wind:** 5 GW of new load with new northern wind, at a fixed 4 or 8 GW in every
+  hour, and as 10 GW installed that follows 2015's hourly wind in SE1 and SE2 (ENTSO-E,
+  script 18; the run is left out when those data are missing).
 
 For every seventh hour of 2015 (1,252 hours), each scenario is solved in AC (``n44.acpf``)
 and then redispatched for N-0 and N-1 (``n44.redispatch``, with the HVDC set-point as a
@@ -74,10 +76,34 @@ AC_CHECK_STRIDE = 13  # every 13th evaluated hour gets a full AC N-1 after the r
 CHUNKS = 6  # chunks of hours per variant, each saved as soon as it is done
 VOLTAGE_MIN = 0.90
 MATERIAL_MW = 50.0  # the market flow counts as above the capability beyond this
+PROFILE = "profile"  # wind that follows the hourly profile instead of a fixed output
 
 
-def variants() -> list[tuple[str, float | None, float | None]]:
-    """(scenario, new load MW, new wind MW) of every run."""
+def wind_profile() -> pd.Series | None:
+    """2015's hourly wind output in the profile's zones over its maximum, or None.
+
+    From ENTSO-E's actual generation (scripts/18_download_entsoe.py); the hours it misses
+    are interpolated.
+    """
+    path = configured_path("processed_dir") / "entsoe_2015_generation.parquet"
+    if not path.exists():
+        return None
+    generation = pd.read_parquet(path)
+    zones = load_scenario("north_wind")["add_wind"]["profile"]["zones"]
+    total = sum(generation[(z, "B19")] for z in zones)
+    total = total.interpolate(limit_area="inside").ffill().bfill()
+    return total / total.max()
+
+
+def wind_output(name: str, wind, profile: pd.Series | None, h: int) -> float | None:
+    """New wind in hour ``h``: the fixed output, or the installed capacity times the profile."""
+    if wind != PROFILE:
+        return wind
+    return load_scenario(name)["add_wind"]["profile"]["installed_mw"] * float(profile[h])
+
+
+def variants() -> list[tuple[str, float | None, float | str | None]]:
+    """(scenario, new load MW, new wind MW or PROFILE) of every run."""
     out = [
         (name, None, None) for name in ("base", "ac_line", "hvdc", "ac_line_north", "hvdc_north")
     ]
@@ -90,6 +116,11 @@ def variants() -> list[tuple[str, float | None, float | None]]:
         ("north_wind", float(wind["add_load"]["sweep_mw"][0]), float(w))
         for w in wind["add_wind"]["sweep_mw"]
     ]
+    if "profile" in wind["add_wind"]:
+        if wind_profile() is None:
+            print("no ENTSO-E wind data (script 18): the wind-profile run is left out")
+        else:
+            out.append(("north_wind", float(wind["add_load"]["sweep_mw"][0]), PROFILE))
     return out
 
 
@@ -97,12 +128,17 @@ def label(name: str, load_mw: float | None, wind_mw: float | None = None) -> str
     if load_mw is None:
         return name
     tag = f"{name}_{load_mw / 1000:.0f}gw"
+    if wind_mw == PROFILE:
+        installed = load_scenario(name)["add_wind"]["profile"]["installed_mw"]
+        return f"{tag}_wind{installed / 1000:.0f}gw_profile"
     return tag if wind_mw is None else f"{tag}_wind{wind_mw / 1000:.0f}gw"
 
 
-def _context(name: str, load_mw: float | None, wind_mw: float | None):
+def _context(name: str, load_mw: float | None, wind_mw: float | str | None):
     scenario = load_scenario(name)
     ds = Dataset()
+    if wind_mw == PROFILE:  # the reference holds the wind loads at full output
+        wind_mw = scenario["add_wind"]["profile"]["installed_mw"]
     reference = modify_case(parse_raw(ds.raw_text(0, "after")), scenario, load_mw, wind_mw=wind_mw)
     net = build_net(reference)
     table = branch_table(net)
@@ -210,15 +246,19 @@ def solve_hours(job: tuple) -> Path:
     hvdc = links(scenario)
     zone = net.bus.zone
     cut_model = _cut_model(net, dc, table, outages, units, hvdc, generation)
+    profile = wind_profile() if wind_mw == PROFILE else None
     rows = []
     for h in hours:
         raw_case = parse_raw(ds.raw_text(int(h), "after"))
-        case = modify_case(raw_case, scenario, load_mw, wind_mw=wind_mw)
+        wind_h = wind_output(name, wind_mw, profile, int(h))
+        case = modify_case(raw_case, scenario, load_mw, wind_mw=wind_h)
         grid = grid_from_case(case)
         if grid.names != names:
             raise RuntimeError("branch order differs between the AC and DC models")
         base = solve(grid)
         row = {"h": int(h), "converged": base.converged}
+        if wind_h is not None:
+            row["wind_mw"] = wind_h
         if not base.converged:
             rows.append(row)
             continue
@@ -249,7 +289,7 @@ def solve_hours(job: tuple) -> Path:
         row["n1_binding"] = "; ".join(r.binding)
         row.update(_capabilities(pre, r.up - r.down, r.links, cut_model, dc, table, outages, shift))
         if h in ac_hours:
-            row.update(ac_check(raw_case, scenario, load_mw, wind_mw, r, units, outages, table))
+            row.update(ac_check(raw_case, scenario, load_mw, wind_h, r, units, outages, table))
         rows.append(row)
     path.parent.mkdir(parents=True, exist_ok=True)
     partial = path.with_suffix(".tmp")
@@ -359,6 +399,8 @@ def main() -> None:
         }
         if "n1_hvdc_mw" in solved:
             entry["hvdc_mean_mw"] = solved.n1_hvdc_mw.mean()
+        if "wind_mw" in solved:
+            entry["wind_mean_mw"] = solved.wind_mw.mean()
         summary.append(entry)
     summary = pd.DataFrame(summary)
     out = configured_path("results_dir")
