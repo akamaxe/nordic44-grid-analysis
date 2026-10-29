@@ -4,8 +4,8 @@
 # plants. Each bus is given the technology that dominates the part of the Nordic system it
 # stands for, and each technology a short-run marginal cost typical of 2015. These are
 # assumptions for a structural study: they set a plausible merit order (nuclear, then hydro,
-# then thermal), not real prices. Zonal prices are not reproduced or compared until the
-# ENTSO-E data are available.
+# then thermal), not real prices. scripts/19_market_comparison.py sets the resulting nodal
+# prices against 2015's real zonal prices.
 #
 # Marginal costs in EUR/MWh:
 technologies:

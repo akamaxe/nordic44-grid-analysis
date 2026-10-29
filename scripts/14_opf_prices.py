@@ -6,7 +6,7 @@ AC losses of the annual run placed at the branch ends (loss-compensated DC). The
 
 Nodal prices split into an energy component (the price at the slack bus) and a congestion
 component (binding branches x PTDF). They describe the network under the cost assumptions;
-the comparison with 2015's real zonal prices waits for the ENTSO-E data.
+scripts/19_market_comparison.py compares them with 2015's real zonal prices.
 
 Also writes the comparison of the OPF's generation per zone with the market's, and checks
 the OPF against pandapower's rundcopp on the representative hours.

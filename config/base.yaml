@@ -3,6 +3,7 @@
 paths:
   zenodo_dir: data/raw/zenodo
   github_dir: data/raw/github
+  entsoe_dir: data/raw/entsoe
   processed_dir: data/processed
   results_dir: results
 

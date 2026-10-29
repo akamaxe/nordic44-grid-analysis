@@ -5,7 +5,14 @@ import pytest
 from n44.io.build_net import build_net
 from n44.io.psse_parser import read_raw
 from n44.powerflow import run_ac
-from n44.snapshots import SnapshotStore, apply_values, calendar, load_snapshot, values_from_case
+from n44.snapshots import (
+    SnapshotStore,
+    apply_values,
+    calendar,
+    clock_changes,
+    load_snapshot,
+    values_from_case,
+)
 from tests.conftest import FIXTURES
 
 
@@ -35,6 +42,16 @@ def test_calendar_handles_clock_changes():
     assert autumn.local_time.iloc[2] == autumn.local_time.iloc[3]  # 02:00 twice
     assert autumn.utc_time.iloc[3] - autumn.utc_time.iloc[2] == pd.Timedelta("1h")
     assert autumn.local_time.iloc[23] == pd.Timestamp("2015-10-25 22:00")
+
+
+def test_other_years_change_clocks_on_their_own_days():
+    assert clock_changes(2025, "Europe/Stockholm") == (
+        pd.Timestamp("2025-03-30"),
+        pd.Timestamp("2025-10-26"),
+    )
+    cal = calendar(2025)
+    assert cal.loc[cal.synthetic].index[0] == 24 * 88 + 2
+    assert cal.utc_time.iloc[0] == pd.Timestamp("2024-12-31 23:00", tz="UTC")
 
 
 @pytest.mark.dataset

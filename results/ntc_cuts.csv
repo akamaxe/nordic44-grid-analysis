@@ -1,0 +1,4 @@
+cut,border,capacity_median_mw,capacity_p10_mw,capacity_p90_mw,capacity_min_mw,capacity_max_mw,capacity_back_median_mw,market_flow_mean_mw,market_flow_max_mw,hours_flow_above_capacity,hours_congested,hours_south_dearer,hours_congested_and_dearer,hours_north_dearer,sum_rate_a_mw,model_capability_n1_median_mw,capacity_over_model_capability
+snitt 1 (SE1->SE2),SE1->SE2,2900,2800,3300,1800,3300,3300,480.5,3023,17,15,14,13,0,6400,3191,0.9087
+snitt 2 (SE2->SE3),SE2->SE3,6500,5700,7000,4400,7100,7300,3820,7317,424,610,661,555,0,9700,3186,2.04
+snitt 4 (SE3->SE4),SE3->SE4,4800,3800,5100,2700,5200,2000,2841,5307,151,747,657,603,0,8300,5524,0.869

@@ -952,6 +952,244 @@ def plot_opf_prices(zones: pd.DataFrame, binding: pd.DataFrame, out: Path, top: 
     return _save(fig, out)
 
 
+def plot_ntc_cuts(
+    capacity: pd.DataFrame,
+    market: pd.DataFrame,
+    capability: pd.DataFrame,
+    cuts: pd.DataFrame,
+    out: Path,
+) -> Path:
+    """Duration curves per Swedish cut: capacity offered to the market, market flow, model.
+
+    The offered capacity is ENTSO-E's day-ahead capacity on the cut's Nord Pool border, the
+    market flow Nord Pool's flow on that border, and the capability the equivalent's N-1
+    transfer capability (script 12). The dotted line is the sum of RATE A of the cut.
+    """
+    fig, axes = plt.subplots(1, len(cuts), figsize=(10.5, 3.9), dpi=200, sharey=True)
+    fig.patch.set_facecolor(INK["surface"])
+    for ax, row in zip(axes, cuts.itertuples(), strict=True):
+        _chart_axes(ax)
+        ax.axhline(0, color="#c3c2b7", lw=1.0, zorder=1)
+        for label, values, color in (
+            ("capacity offered to the market", capacity[row.border], SERIES[2]),
+            ("market flow", market[row.border], SERIES[0]),
+            ("N-1 capability of the equivalent", capability[row.cut], SERIES[1]),
+        ):
+            sorted_values = np.sort(values.dropna().to_numpy())[::-1]
+            ax.plot(
+                np.arange(1, len(sorted_values) + 1), sorted_values, color=color, lw=2, label=label
+            )
+        ax.axhline(row.sum_rate_a_mw, color=INK["muted"], lw=1.0, ls=(0, (1, 2)), zorder=1)
+        ax.text(
+            8760,
+            row.sum_rate_a_mw,
+            f"Σ RATE A {row.sum_rate_a_mw:,.0f} MW",
+            ha="right",
+            va="bottom",
+            fontsize=7,
+            color=INK["secondary"],
+        )
+        _title(
+            ax,
+            row.cut,
+            f"capacity median {row.capacity_median_mw:,.0f} MW, "
+            f"equivalent {row.model_capability_n1_median_mw:,.0f} MW",
+        )
+        ax.set_xlabel("hours of 2015, sorted", fontsize=8)
+        ax.set_xlim(0, 8760)
+    axes[0].set_ylabel("flow north to south (MW)", fontsize=8)
+    axes[0].legend(frameon=False, fontsize=7, labelcolor=INK["secondary"], loc="lower left")
+    fig.suptitle(
+        "Capacity the TSOs gave the market on each Swedish cut, against the equivalent",
+        x=0.01,
+        ha="left",
+        fontsize=12,
+        color=INK["primary"],
+    )
+    fig.text(
+        0.01,
+        0.005,
+        "Capacity offered to the day-ahead market on the cut's border (ENTSO-E) and the "
+        "market flow on that border (Nord Pool). Each curve is sorted on its own.",
+        fontsize=6.5,
+        color=INK["muted"],
+    )
+    fig.tight_layout(rect=(0, 0.03, 1, 0.94))
+    return _save(fig, out)
+
+
+def plot_market_prices(zones: pd.DataFrame, borders: pd.DataFrame, out: Path) -> Path:
+    """Real zonal prices against the zone averages of the DC-OPF's nodal prices.
+
+    Left, the mean price of each zone over 2015. Right, the hours in which each border
+    separates prices, for the borders that separate them at all.
+    """
+    fig, (left, right) = plt.subplots(
+        1, 2, figsize=(10.0, 4.2), dpi=200, gridspec_kw={"width_ratios": [1.15, 1]}
+    )
+    fig.patch.set_facecolor(INK["surface"])
+    for ax in (left, right):
+        _chart_axes(ax)
+    data = zones.set_index("zone").reindex(list(ZONE_LABELS))
+    x = np.arange(len(data))
+    for label, column, color, marker in (
+        ("market (ENTSO-E)", "real_mean_eur", SERIES[0], "o"),
+        ("DC-OPF, zone average", "model_mean_eur", SERIES[1], "D"),
+    ):
+        left.scatter(x, data[column], s=34, color=color, marker=marker, label=label, zorder=3)
+    left.vlines(
+        x,
+        data[["real_mean_eur", "model_mean_eur"]].min(axis=1),
+        data[["real_mean_eur", "model_mean_eur"]].max(axis=1),
+        color="#c3c2b7",
+        lw=1.0,
+        zorder=2,
+    )
+    left.set_xticks(x, data.index, fontsize=7.5)
+    left.set_ylabel("mean price over 2015 (EUR/MWh)", fontsize=8)
+    left.set_ylim(15, max(32, float(data[["real_mean_eur", "model_mean_eur"]].max().max()) + 2))
+    left.legend(frameon=False, fontsize=7.5, labelcolor=INK["secondary"], loc="upper left")
+    _title(
+        left, "Mean price per zone", "market prices against nodal prices under the cost assumptions"
+    )
+    shown = borders[(borders.real_hours_separated > 0) | (borders.model_hours_separated > 0)]
+    shown = shown.sort_values("real_hours_separated")
+    y = np.arange(len(shown))
+    height = 0.38
+    right.barh(
+        y + height / 2,
+        shown.real_hours_separated,
+        height=height,
+        color=SERIES[0],
+        label="market",
+        zorder=2,
+    )
+    right.barh(
+        y - height / 2,
+        shown.model_hours_separated,
+        height=height,
+        color=SERIES[1],
+        label="DC-OPF",
+        zorder=2,
+    )
+    right.set_yticks(y, shown.border, fontsize=7.5)
+    right.grid(axis="y", visible=False)
+    right.grid(axis="x", color=INK["grid"], lw=0.6)
+    right.set_xlabel("hours of 2015 with different prices either side", fontsize=8)
+    right.legend(frameon=False, fontsize=7.5, labelcolor=INK["secondary"], loc="lower right")
+    _title(right, "Where prices separate", "borders with at least one hour of separation")
+    fig.tight_layout()
+    return _save(fig, out)
+
+
+def plot_year_cuts(
+    cuts: dict[int, pd.DataFrame], sum_rate: pd.Series, capability: pd.Series, out: Path
+) -> Path:
+    """Duration curves of the Swedish cuts in two years on the same 2015 grid.
+
+    The dotted line is the sum of RATE A of the cut, the dashed one the equivalent's median
+    N-1 transfer capability in 2015 (script 12).
+    """
+    years = sorted(cuts)
+    names = list(cuts[years[0]].columns)
+    fig, axes = plt.subplots(1, len(names), figsize=(10.5, 3.9), dpi=200, sharey=True)
+    fig.patch.set_facecolor(INK["surface"])
+    for ax, cut in zip(axes, names, strict=True):
+        _chart_axes(ax)
+        ax.axhline(0, color="#c3c2b7", lw=1.0, zorder=1)
+        curves = []
+        for year, color in zip(years, SERIES, strict=False):
+            values = np.sort(cuts[year][cut].to_numpy())[::-1]
+            curves.append(np.interp(np.linspace(0, 1, 101), np.linspace(0, 1, len(values)), values))
+            ax.plot(np.arange(1, len(values) + 1), values, color=color, lw=2, label=str(year))
+        for level, style, text in (
+            (sum_rate[cut], (0, (1, 2)), f"Σ RATE A {sum_rate[cut]:,.0f} MW"),
+            (capability[cut], (0, (4, 3)), f"N-1 capability 2015 {capability[cut]:,.0f} MW"),
+        ):
+            ax.axhline(level, color=INK["muted"], lw=1.0, ls=style, zorder=1)
+            # the label goes at the end of the line where the curves keep farthest from it
+            gap = {
+                side: min(np.abs(c[span] - level).min() for c in curves)
+                for side, span in (("left", slice(0, 45)), ("right", slice(56, 101)))
+            }
+            side = max(gap, key=gap.get)
+            ax.text(
+                0 if side == "left" else 8760,
+                level,
+                text,
+                ha=side,
+                va="bottom",
+                fontsize=6.8,
+                color=INK["secondary"],
+                path_effects=[pe.withStroke(linewidth=2.5, foreground=INK["surface"])],
+            )
+        means = ", ".join(f"{y} {cuts[y][cut].mean():,.0f}" for y in years)
+        _title(ax, cut, f"mean flow (MW) {means}")
+        ax.set_xlabel("hours of the year, sorted", fontsize=8)
+        ax.set_xlim(0, 8760)
+    axes[0].set_ylabel("flow north to south (MW)", fontsize=8)
+    axes[0].legend(frameon=False, fontsize=7.5, labelcolor=INK["secondary"], loc="lower left")
+    fig.suptitle(
+        "Transfer through the Swedish cuts on the 2015 grid, 2015 and 2025",
+        x=0.01,
+        ha="left",
+        fontsize=12,
+        color=INK["primary"],
+    )
+    fig.tight_layout(rect=(0, 0, 1, 0.93))
+    return _save(fig, out)
+
+
+def plot_year_balances(
+    positions: dict[int, pd.DataFrame], monthly: dict[int, pd.Series], out: Path
+) -> Path:
+    """Net position of each zone in two years, and N-1 insecurity month by month.
+
+    Left, production minus consumption over the year (positive = exporting zone). Right,
+    insecure outages per hour, monthly mean, on the 2015 grid.
+    """
+    years = sorted(positions)
+    fig, (left, right) = plt.subplots(
+        1, 2, figsize=(10.0, 4.2), dpi=200, gridspec_kw={"width_ratios": [1, 1.1]}
+    )
+    fig.patch.set_facecolor(INK["surface"])
+    for ax in (left, right):
+        _chart_axes(ax)
+    order = list(ZONE_LABELS)
+    y = np.arange(len(order))[::-1]
+    height = 0.38
+    for k, (year, color) in enumerate(zip(years, SERIES, strict=False)):
+        values = positions[year][order].sum() / 1e6
+        left.barh(
+            y + (0.5 - k) * height, values, height=height, color=color, label=str(year), zorder=2
+        )
+    left.axvline(0, color="#c3c2b7", lw=1.0)
+    left.set_yticks(y, order, fontsize=7.5)
+    left.grid(axis="y", visible=False)
+    left.grid(axis="x", color=INK["grid"], lw=0.6)
+    left.set_xlabel("production minus consumption (TWh)", fontsize=8)
+    left.legend(frameon=False, fontsize=7.5, labelcolor=INK["secondary"], loc="lower right")
+    _title(left, "Net position of each zone", "exporting zones to the right")
+    months = np.arange(1, 13)
+    for year, color in zip(years, SERIES, strict=False):
+        right.plot(
+            months,
+            monthly[year].reindex(months),
+            color=color,
+            lw=2,
+            marker="o",
+            ms=4,
+            label=str(year),
+        )
+    right.set_xticks(months, ["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"])
+    right.set_ylim(bottom=0)
+    right.set_ylabel("insecure outages per hour", fontsize=8)
+    right.legend(frameon=False, fontsize=7.5, labelcolor=INK["secondary"], loc="upper right")
+    _title(right, "N-1 insecurity of the 2015 grid", "monthly mean of the 71 outages")
+    fig.tight_layout()
+    return _save(fig, out)
+
+
 REINFORCEMENTS = {  # scenario: (label, colour, line style); dashed where N-0 binds
     "base": ("2015 network", INK["secondary"], "-"),
     "ac_line": ("+ AC Hjälta–Ringhals", SERIES[0], "--"),
@@ -1036,11 +1274,11 @@ def plot_reinforcements(
 
 
 def plot_northern_load(summary: pd.DataFrame, step: int, out: Path) -> Path:
-    """Redispatch and cut flows as new industrial load is added in SE1/SE2.
+    """Redispatch and cut flows as new industrial load is added in SE1/SE2, and new wind.
 
-    Left: N-0 and N-1 redispatch per year against the new load (0 = the 2015 network), with
-    the two wind variants at 5 GW as open markers. Right: mean flow across the three Swedish
-    cuts against the new load.
+    Left: N-0 and N-1 redispatch per year against the new load (0 = the 2015 network).
+    Middle: the same two volumes with 5 GW of new load and new wind, fixed or following the
+    2015 profile. Right: mean flow across the three Swedish cuts against the new load.
     """
     data = summary.set_index("scenario")
     sweep = data[data.index.str.startswith("north_load") | (data.index == "base")]
@@ -1049,51 +1287,54 @@ def plot_northern_load(summary: pd.DataFrame, step: int, out: Path) -> Path:
     )
     order = np.argsort(load)
     load, sweep = load[order], sweep.iloc[order]
-    fig, (left, right) = plt.subplots(1, 2, figsize=(10.4, 4.3), dpi=200)
+    fig, (left, middle, right) = plt.subplots(
+        1, 3, figsize=(12.6, 4.4), dpi=200, gridspec_kw={"width_ratios": [1.15, 0.95, 1.15]}
+    )
     fig.patch.set_facecolor(INK["surface"])
-    for ax in (left, right):
+    for ax in (left, middle, right):
         _chart_axes(ax)
-    curves = [sweep[c].to_numpy() for c in ("n0_redispatch_twh", "n1_redispatch_twh")]
-    for column, label, color in (
+    volumes = (
         ("n0_redispatch_twh", "intact network (N-0)", SERIES[0]),
         ("n1_redispatch_twh", "N-0 and N-1", SERIES[1]),
-    ):
+    )
+    for column, label, color in volumes:
         left.plot(load, sweep[column], color=color, lw=2, marker="o", ms=4, label=label, zorder=2)
-        for tag in [t for t in data.index if t.startswith("north_wind")]:
-            wind = tag.split("wind")[-1].replace("gw", "")
-            value = data.loc[tag, column]
-            left.scatter(
-                5.0,
-                value,
-                s=34,
-                facecolor=INK["surface"],
-                edgecolor=color,
-                lw=1.5,
-                zorder=3,
-            )
-            # labelled on the right of the marker, unless a curve passes close by there
-            right_side = all(abs(np.interp(5.6, load, c) - value) > 1.5 for c in curves)
-            left.annotate(
-                f"+{wind} GW wind",
-                (5.0, value),
-                xytext=(6, 0) if right_side else (-6, 0),
-                textcoords="offset points",
-                fontsize=7,
-                color=INK["secondary"],
-                ha="left" if right_side else "right",
-                va="center",
-                path_effects=[pe.withStroke(linewidth=3, foreground=INK["surface"])],
-                zorder=4,
-            )
     left.set_ylim(bottom=0)
     left.set_xlabel("new industrial load in SE1/SE2 (GW)", fontsize=8)
     left.set_ylabel("redispatch per year (TWh)", fontsize=8)
     _title(
         left,
         "Redispatch as northern demand grows",
-        f"same market dispatch elsewhere, one hour in {step} of 2015, open markers with new wind",
+        f"same market dispatch elsewhere, one hour in {step} of 2015",
     )
     left.legend(frameon=False, fontsize=7.5, labelcolor=INK["secondary"], loc="upper left")
+
+    cases = [("north_load_5gw", "5 GW new load")]
+    for tag in [t for t in data.index if t.startswith("north_wind")]:
+        wind = tag.removesuffix("_profile").split("wind")[-1].replace("gw", "")
+        hourly = tag.endswith("_profile")
+        cases.append(
+            (tag, f"+{wind} GW wind, 2015 profile" if hourly else f"+{wind} GW wind, fixed")
+        )
+    cases = [c for c in cases if c[0] in data.index]
+    y = np.arange(len(cases))[::-1]
+    height = 0.36
+    top = max(data.loc[t, c] for t, _ in cases for c, _, _ in volumes)
+    for k, (column, label, color) in enumerate(volumes):
+        values = [data.loc[t, column] for t, _ in cases]
+        offset = (0.5 - k) * height
+        middle.barh(y + offset, values, height=height, color=color, label=label, zorder=2)
+        for yy, v in zip(y + offset, values, strict=True):
+            middle.text(
+                v + top * 0.02, yy, f"{v:.1f}", va="center", fontsize=6.8, color=INK["secondary"]
+            )
+    middle.set_yticks(y, [label for _, label in cases], fontsize=7.5)
+    middle.grid(axis="y", visible=False)
+    middle.grid(axis="x", color=INK["grid"], lw=0.6)
+    middle.set_xlim(0, top * 1.18)
+    middle.set_xlabel("redispatch per year (TWh)", fontsize=8)
+    _title(middle, "With new wind", "5 GW of new load in every case")
+
     cuts = [c for c in data.columns if c.startswith("mean flow ")]
     for column, color in zip(cuts, SERIES, strict=False):
         right.plot(load, sweep[column], color=color, lw=2, marker="o", ms=4, zorder=2)
@@ -1107,7 +1348,7 @@ def plot_northern_load(summary: pd.DataFrame, step: int, out: Path) -> Path:
             va="center",
         )
     right.axhline(0, color="#c3c2b7", lw=1.0)
-    right.set_xlim(load.min() - 0.3, load.max() * 1.32)  # room for the labels
+    right.set_xlim(load.min() - 0.3, load.max() * 1.36)  # room for the labels
     right.set_xticks(np.arange(0, load.max() + 1, 2))
     right.set_xlabel("new industrial load in SE1/SE2 (GW)", fontsize=8)
     right.set_ylabel("mean flow north to south (MW)", fontsize=8)

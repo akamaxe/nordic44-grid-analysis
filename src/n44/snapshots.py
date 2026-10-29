@@ -19,6 +19,7 @@ silently change topology.
 
 from __future__ import annotations
 
+import copy
 from dataclasses import dataclass, fields
 from functools import cache
 from pathlib import Path
@@ -30,9 +31,6 @@ import pandas as pd
 from n44.config import configured_path, load_config
 from n44.io.build_net import set_branch_status
 from n44.io.psse_parser import RawCase
-
-CLOCK_SKIPPED = pd.Timestamp("2015-03-29")  # 02:00-03:00 does not exist
-CLOCK_REPEATED = pd.Timestamp("2015-10-25")  # 02:00-03:00 occurs twice
 
 
 def _key(*parts) -> list[str]:
@@ -135,27 +133,41 @@ def apply_values(net, values: SnapshotValues) -> None:
     net.bus["psse_va_degree"] = values.bus_va[net.bus.index].to_numpy()
 
 
+def clock_changes(year: int, tz: str) -> tuple[pd.Timestamp, pd.Timestamp]:
+    """The day the clock skips an hour and the day it repeats one, in ``tz``."""
+    days = pd.date_range(f"{year}-01-01", f"{year}-12-31", freq="D")
+    noon = days + pd.Timedelta(hours=12)
+    offset = pd.Series(noon - noon.tz_localize(tz).tz_convert("UTC").tz_localize(None))
+    step = offset.diff()
+    return days[(step > pd.Timedelta(0)).to_numpy()][0], days[(step < pd.Timedelta(0)).to_numpy()][
+        0
+    ]
+
+
 def calendar(year: int | None = None) -> pd.DataFrame:
     """One row per snapshot h: date, hour, local time and UTC time.
 
     The hour in a file name is the Nord Pool row index of the day (the toolbox took the
-    first 24 rows), which shapes the two clock-change days:
+    first 24 rows), which shapes the two clock-change days, here for 2015:
 
     - On 2015-03-29, h2 is the skipped hour 02:00-03:00. Nord Pool interpolated it, so
       ``synthetic`` is True and the UTC time is NaT.
     - On 2015-10-25, h2 is the first 02:00 (summer time) and h3 the second (winter time).
       Hours 4-23 are local 03:00-22:00, and 23:00-24:00 has no snapshot.
+
+    Other years follow the same rule on their own clock-change days.
     """
     year = year or load_config()["dataset"]["year"]
     tz = load_config()["dataset"]["timezone"]
+    skipped, repeated_day = clock_changes(year, tz)
     days = pd.date_range(f"{year}-01-01", f"{year}-12-31", freq="D")
     cal = pd.DataFrame({"date": np.repeat(days, 24), "hour": np.tile(np.arange(24), len(days))})
     cal.index = pd.RangeIndex(len(cal), name="h")
     clock_hour = cal.hour.copy()
-    repeated = cal.date == CLOCK_REPEATED
+    repeated = cal.date == repeated_day
     clock_hour[repeated & (cal.hour >= 3)] -= 1
     cal["local_time"] = cal.date + pd.to_timedelta(clock_hour, unit="h")
-    cal["synthetic"] = (cal.date == CLOCK_SKIPPED) & (cal.hour == 2)
+    cal["synthetic"] = (cal.date == skipped) & (cal.hour == 2)
     # first 02:00 of the repeated day is summer time (DST), the second winter time
     ambiguous = np.where(repeated & (cal.hour == 2), True, False)
     local = cal.local_time.dt.tz_localize(tz, ambiguous=ambiguous, nonexistent="NaT")
@@ -164,15 +176,43 @@ def calendar(year: int | None = None) -> pd.DataFrame:
     return cal
 
 
-def build_tables(texts) -> dict[str, pd.DataFrame]:
-    """Snapshot tables from an iterable of (h, after_PF text)."""
-    from n44.io.psse_parser import parse_raw
+def case_from_values(base: RawCase, values: SnapshotValues) -> RawCase:
+    """A copy of ``base`` (same topology) with one hour's values written in."""
+    out = copy.copy(base)
+    load, gen = base.load, base.generator
+    load_key, gen_key = _key(load.i, load.id), _key(gen.i, gen.id)
+    out.load = load.assign(
+        pl=values.load_p[load_key].to_numpy(),
+        ql=values.load_q[load_key].to_numpy(),
+        status=values.load_status[load_key].to_numpy().astype(int),
+    )
+    out.generator = gen.assign(
+        pg=values.gen_p[gen_key].to_numpy(),
+        qg=values.gen_q[gen_key].to_numpy(),
+        vs=values.gen_vs[gen_key].to_numpy(),
+        stat=values.gen_status[gen_key].to_numpy().astype(int),
+    )
+    br, tr = base.branch, base.transformer
+    br_key, tr_key = _branch_key(br.i, br.j, br.ckt), _branch_key(tr.i, tr.j, tr.ckt)
+    out.branch = br.assign(st=values.branch_status[br_key].to_numpy().astype(int))
+    out.transformer = tr.assign(
+        windv1=values.trafo_windv1[tr_key].to_numpy(),
+        windv2=values.trafo_windv2[tr_key].to_numpy(),
+        ang1=values.trafo_ang1[tr_key].to_numpy(),
+        stat=values.trafo_status[tr_key].to_numpy().astype(int),
+    )
+    bus = base.bus
+    out.bus = bus.assign(vm=values.bus_vm[bus.i].to_numpy(), va=values.bus_va[bus.i].to_numpy())
+    out.area = base.area.assign(pdes=values.area_pdes[base.area.arname].to_numpy())
+    return out
 
+
+def tables_from_values(values: dict[int, SnapshotValues]) -> dict[str, pd.DataFrame]:
+    """Snapshot tables (one row per h) from the values of each hour."""
     rows = {name: {} for name in TABLES}
-    for h, text in texts:
-        values = values_from_case(parse_raw(text))
+    for h, v in values.items():
         for name in TABLES:
-            rows[name][h] = getattr(values, name)
+            rows[name][h] = getattr(v, name)
     tables = {}
     for name in TABLES:
         frame = pd.DataFrame.from_dict(rows[name], orient="index").sort_index()
@@ -180,6 +220,13 @@ def build_tables(texts) -> dict[str, pd.DataFrame]:
         frame.columns = frame.columns.astype(str)
         tables[name] = frame
     return tables
+
+
+def build_tables(texts) -> dict[str, pd.DataFrame]:
+    """Snapshot tables from an iterable of (h, after_PF text)."""
+    from n44.io.psse_parser import parse_raw
+
+    return tables_from_values({h: values_from_case(parse_raw(text)) for h, text in texts})
 
 
 def snapshot_dir() -> Path:

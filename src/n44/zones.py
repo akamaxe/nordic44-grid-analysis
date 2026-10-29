@@ -54,6 +54,25 @@ EXCHANGE_LOADS = (
 )
 EXCHANGE_LOAD_KEYS = frozenset((e.bus, e.load_id) for e in EXCHANGE_LOADS)
 
+# Links to neighbours outside the model, by the zone names of the ENTSO-E platform, with the
+# exchange load that carries each.
+EXTERNAL_LINKS = {
+    ("NO2", "DK1"): (5610, "1"),
+    ("NO2", "NL"): (5620, "1"),
+    ("NO4", "RU"): (6701, "3"),
+    ("SE3", "DK1"): (3360, "1"),
+    ("SE4", "DK2"): (8500, "4"),
+    ("SE4", "DE"): (8600, "1"),
+    ("SE4", "PL"): (8700, "1"),
+    ("FI1", "EE"): (7020, "1"),
+    ("FI1", "RU"): (7010, "1"),
+}
+# Links built after 2015 have no connection bus in the equivalent: NordLink (NO2-DE, 2020),
+# North Sea Link (NO2-GB, 2021) and NordBalt (SE4-LT, 2016). Their export counts as demand of
+# their zone, spread over its loads. On an exchange load they would load a radial branch far
+# beyond what it was built for (NordLink and North Sea Link at Feda put 3.4 GW on 5600-5620).
+NEW_LINKS = (("NO2", "DE"), ("NO2", "GB"), ("SE4", "LT"))
+
 # Links inside the model carried by loads: the load on the sending zone's side gives the flow.
 LOAD_LINKS = {("SE3", "FI1"): (3020, "1"), ("NO4", "FI1"): (6701, "1")}
 
