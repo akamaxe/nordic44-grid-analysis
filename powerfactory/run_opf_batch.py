@@ -46,7 +46,7 @@ def main() -> None:
     for h in args.hours:
         raw_path = raw_dir / f"h{h:04d}.raw"
         raw_path.write_text(ds.raw_text(h, "after"), encoding="latin-1", newline="")
-        project = pf_n44.import_raw(app, raw_path, f"N44_h{h:04d}")
+        project = pf_n44.import_raw(app, raw_path, f"tmp_h{h:04d}")
         pf_n44.set_costs(app, costs)
         opf = pf_n44.set_opf_options(app)
         app.ClearOutputWindow()

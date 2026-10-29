@@ -9,11 +9,17 @@ without this project's parser, and its results close a triangle with pandapower 
 |---|---|
 | `Nordic44_2015.pfd` | 13 PowerFactory projects, the base case and twelve hours of 2015 |
 | `export_projects.py` | Builds the projects and writes `Nordic44_2015.pfd` |
+| `diagram.py` | Draws the single-line diagram, the same in every project |
 | `run_ldf_batch.py` | Load flows for the 60 validation hours, two variants each |
 | `run_n1_batch.py` | Contingency analysis (ComSimoutage) on five critical hours |
 | `run_opf_batch.py` | DC optimal power flow (ComOpf) with nodal prices on three hours |
 | `pf_n44.py` | Code shared by the scripts, which starts PowerFactory, imports RAW files, sets the study options and exports results |
 | `exports/` | PowerFactory results as CSV, read by `scripts/10`, `13` and `17` |
+
+Every project shows the same single-line diagram, here as exported from `N44_BC`. Open the
+image to zoom in on the names.
+
+![Single-line diagram of the Nordic 44 projects in PowerFactory](diagram.svg)
 
 ## Opening the projects
 
@@ -61,8 +67,12 @@ Each project differs from the plain import in five ways.
 - **Generation costs** from `config/costs.yaml` on every machine (nuclear 10, hydro 20,
   thermal 35 EUR/MWh), and a DC optimal power flow that minimises cost within RATE A and
   computes nodal prices.
-- **A single-line diagram** drawn by PowerFactory's diagram layout tool. It is schematic and
-  has no geographic positions.
+- **A single-line diagram**, the same in every project. The busbars sit at fixed positions
+  that follow the map, with Norway to the west, Sweden in the middle and Finland to the east.
+  Machines hang above their busbar and loads below it, every element shows its name, and no
+  name, symbol or line covers another. While no calculation is shown, each bidding zone has
+  its own colour and its name in the drawing. PowerFactory hides the names when the whole
+  diagram is in view, so zoom in to read them. `diagram.py` holds the positions and draws it.
 
 ### What you should see in `N44_h0538`
 
@@ -100,7 +110,8 @@ local database, and only one script can run at a time.
   `--check` it imports the file again into a temporary folder, runs every study that has
   results in `exports/` with the settings the projects carry, and compares. The load flows
   agree to 5·10⁻⁹ p.u., the contingency analyses converge in the same 355 cases with the same
-  flows, and the DC-OPF gives the same prices and the same cost.
+  flows, and the DC-OPF gives the same prices and the same cost. The check also confirms that
+  the thirteen diagrams are identical.
 - The comparisons in `scripts/10`, `13` and `17` work from the committed exports, so
   PowerFactory is only needed to refresh them. `scripts/run_pipeline.py --powerfactory` runs
   the three batch scripts first.
@@ -110,10 +121,11 @@ local database, and only one script can run at a time.
   PowerFactory's, and once loaded they make the engine fail with ExitError 1001 ("cannot load
   DLL"). The scripts read the cost table with `yaml` for that reason.
 - Everything happens in the folder `Nordic44` of the PowerFactory user. The batch scripts
-  import each hour as a temporary project, solve it, export the results and delete the project
-  together with its copy in the recycle bin. The local database does not shrink after
-  deletions, and each import leaves about 0.4 MB in it, which is why the whole year is not run
-  this way. The projects of `export_projects.py` stay in the folder.
+  import each hour as a temporary project (`tmp_hNNNN`, so they never replace the projects of
+  the `.pfd` file), solve it, export the results and delete the project together with its
+  copy in the recycle bin. The local database does not shrink after deletions, and each
+  import leaves about 0.4 MB in it, which is why the whole year is not run this way. The
+  projects of `export_projects.py` stay in the folder.
 
 ### Hours and variants of the load flow
 

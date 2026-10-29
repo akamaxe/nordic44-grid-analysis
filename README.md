@@ -753,9 +753,10 @@ PowerFactory 2024 SP2 or newer.
 3. Run the load flow, the contingency analysis (71 outages) and the DC optimal power flow from
    the Calculation menu. The settings of the comparison are already in place.
 
-Each project has the exact transformer ratios of its RAW file, the cost assumptions and a
-single-line diagram. [powerfactory/README.md](powerfactory/README.md) lists the projects, the
-values each study should give, and how the projects and the exported results were made.
+Each project has the exact transformer ratios of its RAW file, the cost assumptions and the
+same single-line diagram, laid out like the map with each bidding zone in its own colour.
+[powerfactory/README.md](powerfactory/README.md) shows the diagram, lists the projects and the
+values each study should give, and explains how the projects and the exported results were made.
 
 ## Repository layout
 

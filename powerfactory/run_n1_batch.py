@@ -55,7 +55,7 @@ def main() -> None:
         text = ds.raw_text(h, "after")
         raw_path = raw_dir / f"h{h:04d}.raw"
         raw_path.write_text(text, encoding="latin-1", newline="")
-        project = pf_n44.import_raw(app, raw_path, f"N44_h{h:04d}")
+        project = pf_n44.import_raw(app, raw_path, f"tmp_h{h:04d}")
         pf_n44.set_exact_ratios(app, parse_raw(text))
         if not pf_n44.run_ldf(app):
             raise RuntimeError(f"base case of h={h} does not converge in PowerFactory")

@@ -9,8 +9,8 @@ importer as in the batch scripts:
   the N-1 comparison.
 
 Every project has the exact transformer ratios of its RAW file (validation log, entry 6),
-the generation costs of config/costs.yaml, a single-line diagram drawn by PowerFactory's
-diagram layout tool, and a study case that holds the three studies of the comparison:
+the generation costs of config/costs.yaml, the single-line diagram of diagram.py (the same
+drawing in every project), and a study case that holds the three studies of the comparison:
 
 - the load flow, with the options of the pandapower runs (``pf_n44.LDF_OPTIONS``);
 - the contingency analysis, one outage per line and transformer except the radial HVDC
@@ -20,7 +20,8 @@ diagram layout tool, and a study case that holds the three studies of the compar
 The projects also stay in the study folder of the PowerFactory database. With --check, the
 .pfd file is imported again into a temporary folder, and every study with PowerFactory
 results in powerfactory/exports is run from the imported projects, with the settings they
-carry, and compared with those results.
+carry, and compared with those results. The check also confirms that all projects show the
+same diagram.
 
 Usage: python powerfactory/export_projects.py [--check]
 """
@@ -30,6 +31,7 @@ from __future__ import annotations
 import argparse
 from datetime import date, timedelta
 
+import diagram
 import pandas as pd
 import pf_n44
 import yaml
@@ -89,24 +91,6 @@ def hours(tables: dict[str, pd.DataFrame]) -> pd.DataFrame:
     return chosen.sort_values("h", ignore_index=True)
 
 
-def draw_diagram(app) -> None:
-    """One single-line diagram of the ten zone grids, drawn by the diagram layout tool."""
-    study = app.GetActiveStudyCase()
-    grids = [g for g in app.GetCalcRelevantObjects("*.ElmNet") if g.loc_name != "Summary Grid"]
-    selection = study.CreateObject("SetSelect", "Diagram grids")
-    selection.AddRef(grids)
-    layout = app.GetFromStudyCase("ComSgllayout")
-    layout.SetAttribute("iAction", 0)  # generate a new diagram...
-    layout.SetAttribute("iGenType", 0)  # ...of the entire grids in pGrids, in one diagram
-    layout.SetAttribute("pGrids", selection)
-    ok = layout.Execute() == 0
-    selection.Delete()
-    diagrams = app.GetActiveProject().GetContents("*.IntGrfnet", 1)
-    if not ok or len(diagrams) != 1:
-        raise RuntimeError(f"diagram layout failed: {pf_n44.output(app)[-3:]}")
-    diagrams[0].loc_name = "Nordic 44"
-
-
 def build(app, name: str, raw_path, text: str, costs: dict, description: list[str]):
     """Import one case and prepare its study case. Leaves the project deactivated."""
     project = pf_n44.import_raw(app, raw_path, name)
@@ -119,7 +103,7 @@ def build(app, name: str, raw_path, text: str, costs: dict, description: list[st
     outages = pf_n44.add_contingencies(app, command)
     pf_n44.set_costs(app, costs)
     pf_n44.set_opf_options(app)
-    draw_diagram(app)
+    diagram.draw(app)
     project.SetAttribute("desc", description)
     project.Deactivate()
     print(f"{name}: {len(outages)} contingencies", flush=True)
@@ -164,7 +148,7 @@ def check(app, tables: dict[str, pd.DataFrame], costs: dict) -> None:
     rows = []
     for project in sorted(projects, key=lambda p: p.loc_name):
         project.Activate()
-        row = {"project": project.loc_name}
+        row = {"project": project.loc_name, "diagram": diagram.signature(project)}
         ldf = app.GetFromStudyCase("ComLdf")
         row["ldf"] = ldf.Execute() == 0 and bool(app.IsLdfValid())
         h = int(project.loc_name[5:]) if project.loc_name.startswith("N44_h") else None
@@ -255,6 +239,8 @@ def check(app, tables: dict[str, pd.DataFrame], costs: dict) -> None:
         for c in ("ldf", "opf", "n1_same_convergence")
         if c in summary and not summary[c].dropna().all()
     ]
+    if summary["diagram"].nunique() != 1:
+        failed.append("diagram")
     print("check passed" if not failed else f"check FAILED on {failed}")
 
 

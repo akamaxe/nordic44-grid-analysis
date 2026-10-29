@@ -71,7 +71,7 @@ def main() -> None:
         raw_path.write_text(text, encoding="latin-1", newline="")
         case = parse_raw(text)
         start = time.perf_counter()
-        project = pf_n44.import_raw(app, raw_path, f"N44_h{row.h:04d}")
+        project = pf_n44.import_raw(app, raw_path, f"tmp_h{row.h:04d}")
         for variant in VARIANTS:
             if variant == "exact":
                 ratios.append(pf_n44.set_exact_ratios(app, case).assign(h=row.h))
