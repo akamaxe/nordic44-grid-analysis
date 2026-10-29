@@ -1,0 +1,8 @@
+hours,quantity,unit,mean_abs,p99_abs,max_abs,hours_left_out
+8585,flow snitt 1 (SE1->SE2),MW,1.69,5.36,8.592,175
+8585,flow snitt 2 (SE2->SE3),MW,5.373,26.71,64.8,175
+8585,flow snitt 4 (SE3->SE4),MW,1.787,7.772,10.26,175
+8585,flow on each border,MW,1.715,10.93,76.63,175
+8585,machine P,MW,1.706,15.56,203.1,175
+8585,bus voltage,p.u.,3.64e-05,0.0003274,0.01151,175
+8585,transformer ratio,p.u.,2.505e-05,3.968e-06,0.006354,175

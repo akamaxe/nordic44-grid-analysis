@@ -1,0 +1,37 @@
+quantity,2015,2025
+hours with an ac solution,8760,8743
+net position NO1 twh,-16.32,-14.74
+net position NO2 twh,17.77,17.58
+net position NO3 twh,-7.076,-1.901
+net position NO4 twh,3.609,6.942
+net position NO5 twh,16.78,14.98
+net position SE1 twh,12.37,15.7
+net position SE2 twh,31.78,39.06
+net position SE3 twh,-5.683,-11.54
+net position SE4 twh,-15.52,-12.9
+net position FI1 twh,-16.08,-5.178
+snitt 1 (SE1->SE2) mean mw,1602,2471
+snitt 1 (SE1->SE2) p95 mw,3070,3565
+snitt 1 (SE1->SE2) max mw,3613,4352
+snitt 1 (SE1->SE2) hours above sum rate a,0,0
+snitt 1 (SE1->SE2) hours above 2015 median n-1 capability,247,1297
+snitt 2 (SE2->SE3) mean mw,3635,5605
+snitt 2 (SE2->SE3) p95 mw,6271,7300
+snitt 2 (SE2->SE3) max mw,7024,7860
+snitt 2 (SE2->SE3) hours above sum rate a,0,0
+snitt 2 (SE2->SE3) hours above 2015 median n-1 capability,5569,8331
+snitt 4 (SE3->SE4) mean mw,2839,3303
+snitt 4 (SE3->SE4) p95 mw,4596,4976
+snitt 4 (SE3->SE4) max mw,5307,5857
+snitt 4 (SE3->SE4) hours above sum rate a,0,0
+snitt 4 (SE3->SE4) hours above 2015 median n-1 capability,0,37
+hours with an n-0 overload,4794,8200
+losses mean mw,528,961.7
+n-1 secure hours,324,121
+insecure outages per hour,8.392,23.63
+insecure cases,7.351e+04,2.066e+05
+cases with an induced overload,6.255e+04,1.34e+05
+cases with no solution,6416,1.668e+04
+cases with low voltage only,4550,5.588e+04
+"real SE2->SE3 flow in hours with no ac solution, mean mw",,7496
+"real SE2->SE3 flow in all hours, mean mw",,5770

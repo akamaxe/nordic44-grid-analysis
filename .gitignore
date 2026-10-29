@@ -15,6 +15,7 @@ data/processed/
 
 # Large generated results (figures and small summary tables are committed)
 results/annual/
+results/annual_2025/
 results/**/*.parquet
 results/n1/*.npy
 results/validation/powerfactory_buses.csv

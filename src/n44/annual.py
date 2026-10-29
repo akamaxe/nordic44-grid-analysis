@@ -7,13 +7,16 @@ recorded per hour) and adds what the RAW files do not contain: terminal branch f
 loading, border and cut flows, and losses per zone. It adds no independent physics.
 
 The hours are split into chunks solved in parallel processes. Every process loads the base
-network and the snapshot tables once.
+network and the snapshot tables once. Another folder of snapshot tables (another year, say)
+can be given with ``directory``.
 """
 
 from __future__ import annotations
 
 import copy
 from concurrent.futures import ProcessPoolExecutor
+from functools import partial
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -83,9 +86,9 @@ class _WideTables:
         return out
 
 
-def solve_hours(hours) -> dict[str, pd.DataFrame]:
+def solve_hours(hours, directory: Path | None = None) -> dict[str, pd.DataFrame]:
     """Solve the given hours; returns the summary table and the wide result tables."""
-    store, net = SnapshotStore(), base_net()
+    store, net = SnapshotStore(directory), base_net()
     zone = net.bus.zone
     summary, wide = [], _WideTables()
     for h in map(int, hours):
@@ -140,11 +143,13 @@ def solve_hours(hours) -> dict[str, pd.DataFrame]:
     return {"summary": pd.DataFrame(summary).set_index("h"), **wide.frames()}
 
 
-def run_year(workers: int = 3, hours=range(8760)) -> dict[str, pd.DataFrame]:
+def run_year(
+    workers: int = 3, hours=range(8760), directory: Path | None = None
+) -> dict[str, pd.DataFrame]:
     """Solve all hours in ``workers`` processes and merge the results."""
     chunks = [c for c in np.array_split(np.asarray(list(hours)), workers * 4) if len(c)]
     with ProcessPoolExecutor(max_workers=workers) as pool:
-        parts = list(pool.map(solve_hours, chunks))
+        parts = list(pool.map(partial(solve_hours, directory=directory), chunks))
     return {name: pd.concat([p[name] for p in parts]).sort_index() for name in parts[0]}
 
 
