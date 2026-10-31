@@ -1,7 +1,7 @@
 # Methods
 
 How each step of the analysis is computed, from the PSS/E files to the 2025 snapshots. The results
-are in the [README](../README.md), and the discrepancies found on the way are in the
+are in the [report](report.md), and the discrepancies found on the way are in the
 [validation log](validation_log.md). Values are per unit on the PSS/E system base of
 1000 MVA and on the bus base voltages unless stated otherwise.
 
