@@ -15,7 +15,7 @@ redispatch is a linear program solved with HiGHS through ``scipy.optimize``:
 - PTDF_k = PTDF + LODF[:, k] PTDF[k, :] is the sensitivity after outage k.
 - Limits are on active power, with each end's reactive flow and voltage held at the hour's
   values: the same "AC base, DC delta" as the N-1 screening.
-- **The objective is the volume moved**, with costs only breaking ties (w = 0.02, small
+- The objective is the volume moved, with costs only breaking ties (w = 0.02, small
   enough for every coefficient to stay positive). The costs in config/costs.yaml are
   assumptions that do not reproduce the market dispatch: a cost-minimising redispatch would
   also "re-optimise" the market, moving some 10 GW an hour for profit, not for security.

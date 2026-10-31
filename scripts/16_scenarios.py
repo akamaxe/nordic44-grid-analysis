@@ -1,14 +1,14 @@
 """Future scenarios through the same chain as the 2015 analysis (question P5).
 
 Scenarios (config/scenarios/*.yaml):
-- **base:** the 2015 network;
-- **ac_line:** a third AC circuit on snitt 2's most loaded corridor, Hjalta-Ringhals, where
+- base: the 2015 network;
+- ac_line: a third AC circuit on snitt 2's most loaded corridor, Hjalta-Ringhals, where
   the intact network binds;
-- **hvdc:** a 1,200 MW VSC link on the same corridor;
-- **ac_line_north, hvdc_north:** the same two options at the N-1 bottleneck north of
+- hvdc: a 1,200 MW VSC link on the same corridor;
+- ac_line_north, hvdc_north: the same two options at the N-1 bottleneck north of
   Hjalta: a second Hjalta-Grundfors circuit, and the link from Grundfors to Ringhals;
-- **north_load:** new industrial load in SE1/SE2, from 1 to 10 GW;
-- **north_wind:** 5 GW of new load with new northern wind, at a fixed 4 or 8 GW in every
+- north_load: new industrial load in SE1/SE2, from 1 to 10 GW;
+- north_wind: 5 GW of new load with new northern wind, at a fixed 4 or 8 GW in every
   hour, and as 10 GW installed that follows 2015's hourly wind in SE1 and SE2 (ENTSO-E,
   script 18; the run is left out when those data are missing).
 

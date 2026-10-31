@@ -1,30 +1,30 @@
 """N-1 security: contingencies, PTDF/LODF, screening, AC contingency runs, transfer margins.
 
-**Contingencies.** The outage of each line and transformer. A branch whose outage isolates a
+Contingencies. The outage of each line and transformer. A branch whose outage isolates a
 bus (a single-circuit bridge of the network graph) is left out. In N44 those are the radial
 connections of the eight HVDC terminal buses: losing one means losing the link's power, a
 frequency question rather than a flow one.
 
-**Monitoring.** Loading in PSS/E's convention (``n44.results.branch_flows``): terminal current
+Monitoring. Loading in PSS/E's convention (``n44.results.branch_flows``): terminal current
 for lines, MVA for transformers. The intact network is checked against RATE A and
 post-contingency states against RATE B, the short-term emergency rating.
 
-**DC sensitivities.** PTDF and LODF come from pandapower's DC model (``makePTDF``,
+DC sensitivities. PTDF and LODF come from pandapower's DC model (``makePTDF``,
 ``makeLODF``). They are mapped from pandapower's internal branch order to the branch names
 of the annual results ("line 3000-3115-1") and oriented from bus I to bus J.
 
-**Screening.** Each hour's post-contingency flows are estimated from its AC flows plus the
+Screening. Each hour's post-contingency flows are estimated from its AC flows plus the
 LODF change in active power, holding each end's reactive flow and voltage at their
 pre-contingency values ("AC base, DC delta").
 
-**AC contingency runs.** Each outage is solved from the pre-contingency voltages, and a line
+AC contingency runs. Each outage is solved from the pre-contingency voltages, and a line
 goes out together with its end shunts. ``run_n1`` does it with pandapower
 (``set_branch_status``; pandapower's own ``run_contingency`` would leave the shunts in), at
 about 0.1 s per outage. ``ac_n1_sweep`` does it with the reference-model solver of
 ``n44.acpf`` in about 0.5 ms, which makes a full AC N-1 of every hour of the year possible;
 the two agree to the solvers' tolerance.
 
-**Transfer margins.** The extra transfer across a cut that the network can take before some
+Transfer margins. The extra transfer across a cut that the network can take before some
 element exceeds its limit, in the intact network (RATE A) or after any contingency (RATE B).
 Computed with PTDF/LODF, as in flow-based capacity calculation.
 """

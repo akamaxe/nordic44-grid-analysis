@@ -40,34 +40,33 @@ PowerFactory's PSS/E importer.
 | Project | Snapshot | Why it is there | Compared in PowerFactory |
 |---|---|---|---|
 | `N44_BC` | base case | the model as published, which is not a solved power flow ([validation log, entry 1](../docs/validation_log.md#1-the-published-base-case-n44_bcraw-is-not-a-solved-power-flow)) | |
-| `N44_h0027` | 2015-01-02, hour 3 | lowest SE2→SE3 transfer | load flow |
+| `N44_h0027` | 2015-01-02, hour 3 | lowest SE2->SE3 transfer | load flow |
 | `N44_h0175` | 2015-01-08, hour 7 | the loss of the Sima transformer has no AC solution | N-1 |
 | `N44_h0538` | 2015-01-23, hour 10 | winter peak demand | load flow, N-1, DC-OPF |
 | `N44_h0539` | 2015-01-23, hour 11 | highest production in Norway, SE1 and SE2 | load flow |
 | `N44_h1109` | 2015-02-16, hour 5 | highest Finnish import | load flow |
-| `N44_h1882` | 2015-03-20, hour 10 | highest SE3→SE4 transfer | load flow |
+| `N44_h1882` | 2015-03-20, hour 10 | highest SE3->SE4 transfer | load flow |
 | `N44_h3657` | 2015-06-02, hour 9 | summer peak demand | load flow, DC-OPF |
 | `N44_h4781` | 2015-07-19, hour 5 | summer lowest demand | load flow |
-| `N44_h5370` | 2015-08-12, hour 18 | highest SE2→SE3 transfer | load flow, N-1, DC-OPF |
+| `N44_h5370` | 2015-08-12, hour 18 | highest SE2->SE3 transfer | load flow, N-1, DC-OPF |
 | `N44_h5600` | 2015-08-22, hour 8 | the loss of the Sima transformer has no AC solution | N-1 |
 | `N44_h6949` | 2015-10-17, hour 13 | highest branch loading | load flow, N-1 |
 | `N44_h8595` | 2015-12-25, hour 3 | winter lowest demand | load flow |
 
 Each project differs from the plain import in five ways.
 
-- **Exact transformer ratios.** The importer rounds each transformer ratio to the nearest tap
-  position, which moves the voltage at bus 5601 by up to 8.8·10⁻⁴ p.u.
-  ([validation log, entry 6](../docs/validation_log.md#6-powerfactorys-psse-importer-rounds-transformer-ratios-to-the-tap-grid)).
-  The tap step of each transformer's type is changed so that its tap position gives the RAW
+- The transformer ratios are exact. The importer rounds each transformer ratio to the nearest
+  tap position, which moves the voltage at bus 5601 by up to 8.8·10⁻⁴ p.u.
+  ([validation log, entry 6](../docs/validation_log.md#6-powerfactorys-psse-importer-rounds-transformer-ratios-to-the-tap-grid)),
+  so the tap step of each transformer's type is changed until its tap position gives the RAW
   ratio exactly.
-- **Load-flow options** of the comparison, listed below.
-- **A contingency analysis** with one outage per line and transformer, 71 in all. The eight
-  radial connections of the HVDC terminals are left out, because losing one means losing the
-  link.
-- **Generation costs** from `config/costs.yaml` on every machine (nuclear 10, hydro 20,
-  thermal 35 EUR/MWh), and a DC optimal power flow that minimises cost within RATE A and
-  computes nodal prices.
-- **A single-line diagram**, the same in every project. The busbars sit at fixed positions
+- The load flow has the options of the comparison, listed below.
+- A contingency analysis has one outage per line and transformer, 71 in all. The eight radial
+  connections of the HVDC terminals are left out, because losing one means losing the link.
+- Every machine has the generation cost of `config/costs.yaml` (nuclear 10, hydro 20,
+  thermal 35 EUR/MWh), and a DC optimal power flow minimises cost within RATE A and computes
+  nodal prices.
+- Every project has the same single-line diagram. The busbars sit at fixed positions
   that follow the map, with Norway to the west, Sweden in the middle and Finland to the east.
   Machines hang above their busbar and loads below it, every element shows its name, and no
   name, symbol or line covers another. While no calculation is shown, each bidding zone has
@@ -83,12 +82,12 @@ validation hours.
 | Study | Result | Value |
 |---|---|---|
 | Load flow | voltage at Hjälta (3100), the lowest in the network | 0.9396 p.u. |
-| | flow on Hjälta–Ringhals circuit 2 (3100–3359), at Hjälta | 1,620.7 MW, loading 146.0 % |
+| | flow on Hjälta-Ringhals circuit 2 (3100-3359), at Hjälta | 1,620.7 MW, loading 146.0 % |
 | | output of the swing plant Oskarshamn (3300) | 5,334.6 MW |
 | | losses in lines and transformers | 1,200.3 MW |
-| Contingency analysis | outages without an AC solution | Sima–Aurland transformer (5300–5301), Kvilldal–Blåfalli (6000–6100) and Aurland–Hagafoss (5301–6001) |
-| | worst overload | Hjälta–Grundfors (3100–3249) at 222.6 % after the loss of Hjälta–Porjus (3100–3115) |
-| | lowest voltage | 0.850 p.u. at the Kristiansand HVDC terminal (5610) after the loss of Kristiansand–Arendal (5600–5603) |
+| Contingency analysis | outages without an AC solution | Sima-Aurland transformer (5300-5301), Kvilldal-Blåfalli (6000-6100) and Aurland-Hagafoss (5301-6001) |
+| | worst overload | Hjälta-Grundfors (3100-3249) at 222.6 % after the loss of Hjälta-Porjus (3100-3115) |
+| | lowest voltage | 0.850 p.u. at the Kristiansand HVDC terminal (5610) after the loss of Kristiansand-Arendal (5600-5603) |
 | DC-OPF | total cost | 1,172,005 EUR/h |
 | | nodal prices | 35 EUR/MWh in Finland and 20 EUR/MWh everywhere else |
 
@@ -191,7 +190,7 @@ A few things matter when comparing element by element.
   RATE A.
 - Loading is defined differently. PowerFactory's `c:loading` uses a line's series current,
   without its end shunts, and a transformer's current. PSS/E uses the terminal current of
-  lines and the MVA of transformers. On line 5101–5501, with a 974 Mvar reactor at one end,
+  lines and the MVA of transformers. On line 5101-5501, with a 974 Mvar reactor at one end,
   that is 27.5 % against 60.7 %. The comparison recomputes PSS/E's convention from
   PowerFactory's flows ([validation log, entry 7](../docs/validation_log.md#7-powerfactory-and-psse-measure-branch-loading-differently)).
 

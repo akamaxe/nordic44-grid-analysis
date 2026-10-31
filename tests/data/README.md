@@ -9,6 +9,6 @@ them.
 
 | File | Origin in the dataset |
 |---|---|
-| `N44_BC.raw` | `Models.zip` → `Models/PSSE Base case/N44_BC.raw` |
-| `N44_20150325_h18_before_PF.raw` | `Week13.zip` → `N44_20150325/PSSESnapshots/h18_before_PF.raw` |
-| `N44_20150325_h18_after_PF.raw` | `Week13.zip` → `N44_20150325/PSSESnapshots/h18_after_PF.raw` |
+| `N44_BC.raw` | `Models/PSSE Base case/N44_BC.raw` in `Models.zip` |
+| `N44_20150325_h18_before_PF.raw` | `N44_20150325/PSSESnapshots/h18_before_PF.raw` in `Week13.zip` |
+| `N44_20150325_h18_after_PF.raw` | `N44_20150325/PSSESnapshots/h18_after_PF.raw` in `Week13.zip` |

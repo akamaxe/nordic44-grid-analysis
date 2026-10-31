@@ -2,7 +2,7 @@
 
 The market dispatch is N-1 insecure in most hours of the equivalent (scripts 11 and 15), so a
 margin measured from it is dominated by violations the transfer has nothing to do with. The
-margin is therefore measured from each hour's **secure state**: the market dispatch after the
+margin is therefore measured from each hour's secure state: the market dispatch after the
 N-1 redispatch of scripts/15_redispatch.py.
 
 For each cut (snitt 1, 2 and 4), the transfer goes between the two zones on either side of it
@@ -10,13 +10,13 @@ For each cut (snitt 1, 2 and 4), the transfer goes between the two zones on eith
 mean 2015 output. Shifting generation in zones further away would let their own
 constraints, which have nothing to do with the cut, set its limit. From the secure state, the
 margin is the extra transfer before a critical element reaches its limit:
-- **N-0:** the intact network against RATE A;
-- **N-1:** after any of the 71 outages, against RATE B.
+- N-0: the intact network against RATE A;
+- N-1: after any of the 71 outages, against RATE B.
 
 Critical elements change their flow by at least 5 % of the transfer in that state, as in
 flow-based capacity calculation.
 
-The **N-1 transfer capability** of the cut is its flow in the secure state plus the part of
+The N-1 transfer capability of the cut is its flow in the secure state plus the part of
 the margin that crosses the cut; the rest of a transfer loops through Norway and Finland. The
 market flow is above it, by more than 50 MW, in the hours whose redispatch relieves the cut.
 Both flows are the mean of the two ends of each crossing branch, lossless like the DC

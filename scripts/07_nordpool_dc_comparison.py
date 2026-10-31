@@ -2,9 +2,9 @@
 
 For each hour in config/representative_hours.yaml:
 
-- **Borders and cuts.** Flows on every Nord Pool border and Swedish cut, from the pandapower AC
+- Borders and cuts. Flows on every Nord Pool border and Swedish cut, from the pandapower AC
   solution, against Nord Pool's exchange.
-- **AC against DC.** A plain DC power flow and a loss-compensated one, compared with the AC
+- AC against DC. A plain DC power flow and a loss-compensated one, compared with the AC
   solution: branch flow errors against each branch's R/X ratio, and angle errors.
 
 Writes results/validation/{nordpool_borders,dc_branches,dc_buses,dc_summary}.csv and

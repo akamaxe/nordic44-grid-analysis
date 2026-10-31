@@ -5,7 +5,7 @@ cause, fix and the evidence behind it. Entries are in the order they were found.
 
 ## 1. The published base case `N44_BC.raw` is not a solved power flow
 
-**Found** during the dataset analysis, before the network builder was written.
+Found during the dataset analysis, before the network builder was written.
 
 **Symptom.** Evaluating the power balance at the voltages stored in `N44_BC.raw`, with an
 admittance matrix built from the PSS/E branch equations, shows non-generator buses that
@@ -17,7 +17,7 @@ generation minus total load is 20 MW while the stored voltages imply 362 MW of l
 and neither happens. The P mismatch must therefore come from the generator outputs
 themselves.
 
-**Cause.** The mismatch is a **constant percentage of output within each area**, −3.83 % in
+**Cause.** The mismatch is a constant percentage of output within each area, −3.83 % in
 NO1, −1.75 % in NO2, −1.47 % in SE2, −0.16 % in SE3, +0.23 % in FI1 and so on. This is the
 footprint of `psspy.scal_2`, the per-area scaling the toolbox applies before every solution.
 The base case was saved after a rescaling and before solving again.
@@ -31,16 +31,16 @@ the bound explained by the file's rounding, with a maximum of 0.55 MW and 2.8 Mv
 
 ## 2. Transformer metered end read backwards (NMETR)
 
-**Found** comparing the area interchange computed from PSS/E's voltages with the interchange
+Found comparing the area interchange computed from PSS/E's voltages with the interchange
 PSS/E itself reported in `PSSE_in_out.xlsx`, over all 8,760 hours.
 
 **Symptom.** Eight areas agreed within the rounding of the Excel file. NO2 and NO5 were off by
 up to 3.4 MW, in 4,071 hours.
 
-**Hypothesis.** NO2–NO5 is the only border crossed by transformers (5601–6001 and 6000–6001),
+**Hypothesis.** NO2-NO5 is the only border crossed by transformers (5601-6001 and 6000-6001),
 so the metered end of transformers was suspect.
 
-**Cause.** In PSS/E, the transformer field NMETR names the **non**-metered winding, while the
+**Cause.** In PSS/E, the transformer field NMETR names the non-metered winding, while the
 branch field MET names the metered end. The code read NMETR as the metered end.
 
 **Fix.** The metered end is now the winding 2 bus if NMETR = 1 and the winding 1 bus
@@ -51,7 +51,7 @@ otherwise, in both `n44.ybus` and `n44.io.build_net`. The largest difference dro
 
 ## 3. PSS/E's overload flag was partly hidden by the toolbox
 
-**Found** comparing the hours in which some branch is loaded at or above 100 % of RATE A with
+Found comparing the hours in which some branch is loaded at or above 100 % of RATE A with
 PSS/E's limit check in `PSSE_in_out.xlsx`.
 
 **Symptom.** In 1,780 hours the loading computed here was at or above 100 % while
@@ -66,7 +66,7 @@ later message overwrites an earlier one. In those hours some branch was also abo
 (1,678 h) or Rate C (102 h).
 
 **Fix.** The overload flag is read as "any Rate A/B/C message" (`branch_overload` in
-`n44.io.nordpool.read_psse_in_out`). Agreement is then **8,760 of 8,760 hours**, with the
+`n44.io.nordpool.read_psse_in_out`). Agreement is then 8,760 of 8,760 hours, with the
 loading convention unchanged (terminal current for lines, MVA for transformers, more loaded
 end).
 
@@ -74,7 +74,7 @@ end).
 
 ## 4. Area interchange targets not met in some hours (a property of the dataset)
 
-**Found** by the same check, which compares each area's interchange with its target PDES.
+Found by the same check, which compares each area's interchange with its target PDES.
 
 **Symptom.** In 1,086 hours an area was more than 10 MW (PSS/E's tolerance PTOL) away from its
 target. It was almost always SE3, and the worst case was 573 MW at h = 8189
@@ -96,7 +96,7 @@ flagged.
 
 ## 5. Larger voltage deviations at two buses over the year (explained, no change)
 
-**Found** in the annual run. On the ten representative hours the largest voltage difference
+Found in the annual run. On the ten representative hours the largest voltage difference
 against PSS/E was 7.5·10⁻⁶ p.u., and over all 8,760 hours it reached 3.3·10⁻⁵ p.u.
 
 **Analysis.** Of the 53 hours above 10⁻⁵ p.u., the worst bus is always 3100 HJALTA (32 h) or
@@ -111,7 +111,7 @@ property of the PSS/E reference, not of the model.
 
 ## 6. PowerFactory's PSS/E importer rounds transformer ratios to the tap grid
 
-**Found** in the first PowerFactory load flow of the imported base case, and then on the 60
+Found in the first PowerFactory load flow of the imported base case, and then on the 60
 validation hours (`powerfactory/run_ldf_batch.py`, `scripts/10_validate_powerfactory.py`).
 
 **Symptom.** Against pandapower, losses and slack power agreed within 0.03 MW, but voltages
@@ -127,9 +127,9 @@ disagree, and all the buses that stood out sit behind a transformer.
 **Cause.** PowerFactory stores a transformer's ratio as an integer tap position. The N44
 transformers define a grid from RMA = 1.4 to RMI = 0.6 in NTP = 127 positions, which is
 0.63492 % per step, and PowerFactory's importer takes the nearest position. The RAW ratios
-WINDV1 are not on that grid. Transformer 5601–6001 has WINDV1 = 1.0054, which becomes
-position +1 = 1.00635, a ratio error of 9.5·10⁻⁴. Transformers 3359–3360 (0.9998 → 1.0) and
-6700–6701 (1.0125 → 1.01270) are off by 2·10⁻⁴. The ratios start off-grid in the base case,
+WINDV1 are not on that grid. Transformer 5601-6001 has WINDV1 = 1.0054, which becomes
+position +1 = 1.00635, a ratio error of 9.5·10⁻⁴. Transformers 3359-3360 (0.9998 rounded to 1.0)
+and 6700-6701 (1.0125 rounded to 1.01270) are off by 2·10⁻⁴. The ratios start off-grid in the base case,
 and PSS/E's tap stepping moves them by whole steps, so the offset survives in every hour. The
 importer prints no warning.
 
@@ -159,32 +159,32 @@ every transformer and hour), `results/validation/powerfactory_triangle.csv`,
 
 ## 7. PowerFactory and PSS/E measure branch loading differently
 
-**Found** with the flows already agreeing to 10⁻³ Mvar, when the loading reported by
-PowerFactory (`c:loading`) still differed from PSS/E's. On line 5101–5501 the gap was 33
+Found with the flows already agreeing to 10⁻³ Mvar, when the loading reported by
+PowerFactory (`c:loading`) still differed from PSS/E's. On line 5101-5501 the gap was 33
 percentage points (27.5 % against 60.7 % at h = 538), and on transformers it was up to 1.5
 points.
 
 **Cause.** There are two definitions, both legitimate. For lines, PowerFactory computes the
 loading from the current in the line's series branch and leaves out the end shunts
 (`ElmLnecomp`), while PSS/E (NXFRAT = 1) uses the terminal current, end shunts included. Line
-5101–5501 carries a 974 Mvar reactor at one end, so its terminal current is more than twice
+5101-5501 carries a 974 Mvar reactor at one end, so its terminal current is more than twice
 its series current. Recomputed from pandapower's series currents, PowerFactory's figure
 matches to 10⁻⁵ points on every line. For transformers, PowerFactory uses current relative to
 rated current and PSS/E (XFRRAT = 0) uses MVA. The two differ by the per-unit voltage at the
-more loaded end, 141.4 % against 142.4 % on 5400–5402 at 0.993 p.u.
+more loaded end, 141.4 % against 142.4 % on 5400-5402 at 0.993 p.u.
 
 **Fix.** Neither model needs one. `solution_from_powerfactory` recomputes the loading in
 PSS/E's convention from PowerFactory's terminal flows and voltages. That figure agrees with
 pandapower's to 10⁻⁵ points, and PowerFactory's own figure is kept as `loading_pf_pct`.
 
-**Why it matters.** Overload counts and N-1 rankings depend on the convention, and which
+**Consequence.** Overload counts and N-1 rankings depend on the convention, and which
 branch is "overloaded" can change between tools with identical flows. Comparisons with
 PowerFactory's contingency analysis must therefore use flows, or loading recomputed in one
 convention.
 
 ## 8. PowerFactory prices energy at its reference machine in the DC-OPF
 
-**Found** comparing PowerFactory's DC optimal power flow (ComOpf, linear programming,
+Found comparing PowerFactory's DC optimal power flow (ComOpf, linear programming,
 `powerfactory/run_opf_batch.py`) with `n44.opf.dc_opf` on three hours
 (`scripts/17_validate_powerfactory_opf.py`).
 
@@ -205,7 +205,7 @@ flexible plants) is marginal, and the two tools agree on the full nodal prices.
 line-end shunts. With the same demand in the LP, the two costs agree to the cent, for example
 1,172,005.02 against 1,172,005.10 EUR/h at h = 538. PowerFactory adds branch constraints in
 outer loops and ends each run with "OPF result does not satisfy all constraints". Its own
-check finds line 5301–6001 at 100.5 %, yet its cost equals the LP optimum. The LP has all 79
+check finds line 5301-6001 at 100.5 %, yet its cost equals the LP optimum. The LP has all 79
 branch constraints from the start.
 
 **Consequence.** Congestion components and price differences between buses compare directly.
@@ -217,12 +217,12 @@ prices agree under the final cost table.
 
 ## 9. pandapower reports solutions that do not exist after some outages
 
-**Found** cross-checking the reference-model N-1 solver (`n44.acpf`) against pandapower's AC
+Found cross-checking the reference-model N-1 solver (`n44.acpf`) against pandapower's AC
 N-1 on the 100 hours of highest snitt-2 transfer (`scripts/11_n1_security.py`).
 
 **Symptom.** Post-contingency loading agreed to 10⁻⁵ points, but in 6 of the 100 hours
 pandapower solved one more outage than the reference solver. It was always the Sima
-transformer (5300–5301). PowerFactory, in the one of those hours it also ran (h = 6949), found
+transformer (5300-5301). PowerFactory, in the one of those hours it also ran (h = 6949), found
 no solution either.
 
 **Analysis.** Without reactive limits, pandapower does not converge either. It converges only

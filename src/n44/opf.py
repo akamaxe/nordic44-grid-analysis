@@ -11,7 +11,7 @@ D holds the loads, the exchange loads (fixed: they stand for links to neighbours
 model), the active power of the line-end shunts and, in the loss-compensated variant, each
 branch's AC losses split between its ends.
 
-**Nodal prices** come from the duals. The balance constraint gives the price at the slack
+Nodal prices come from the duals. The balance constraint gives the price at the slack
 bus (the energy component), and each binding branch adds PTDF x its shadow price (the
 congestion component). A lossless DC-OPF has no loss component.
 

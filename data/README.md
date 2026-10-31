@@ -8,13 +8,13 @@ the PSS/E consistency checks.
 
 | Data | Source | Licence | Use |
 |---|---|---|---|
-| Hourly PSS/E snapshots of 2015 and daily Nord Pool files | Zenodo record [162907](https://doi.org/10.5281/zenodo.162907), *Nordic44 – 2015 Powerflow Data* (Vanfretti et al.), in 53 weekly archives `Week1.zip` … `Week53.zip` | CC BY-NC 4.0 | All analyses |
-| Base case `N44_BC.raw` | Same record, `Models.zip` → `PSSE Base case/` | CC BY-NC 4.0 | Tests and reference |
+| Hourly PSS/E snapshots of 2015 and daily Nord Pool files | Zenodo record [162907](https://doi.org/10.5281/zenodo.162907), *Nordic44 – 2015 Powerflow Data* (Vanfretti et al.), in 53 weekly archives `Week1.zip` to `Week53.zip` | CC BY-NC 4.0 | All analyses |
+| Base case `N44_BC.raw` | Same record, folder `PSSE Base case/` in `Models.zip` | CC BY-NC 4.0 | Tests and reference |
 | Bus coordinates `N44_Geo_Coordinates_20151015.xlsx` | [ALSETLab/Nordic44-Nordpool](https://github.com/ALSETLab/Nordic44-Nordpool) | GPL-3.0 | Maps only, fetched at run time and never committed |
-| Prices, capacities, flows, load and generation of 2015 and 2025 | [ENTSO-E Transparency Platform](https://transparency.entsoe.eu), REST API | ENTSO-E's terms of use, with attribution | Market comparisons (P1–P4), wind profile (P5), 2025 snapshots (P7), downloaded with a free token and never committed |
+| Prices, capacities, flows, load and generation of 2015 and 2025 | [ENTSO-E Transparency Platform](https://transparency.entsoe.eu), REST API | ENTSO-E's terms of use, with attribution | Market comparisons (P1-P4), wind profile (P5), 2025 snapshots (P7), downloaded with a free token and never committed |
 
 `python scripts/01_download_data.py` downloads about 527 MB into `data/raw/` and checks every
-archive against the MD5 published by Zenodo. `iTesla_Platform.zip` (Modelica, April–July only)
+archive against the MD5 published by Zenodo. `iTesla_Platform.zip` (Modelica, April-July only)
 is not needed and is skipped.
 
 Each weekly archive holds one folder per day, `N44_YYYYMMDD/`, with `CIMSnapshots/`,
@@ -67,19 +67,19 @@ is the one in the original toolbox (`nordic44/n44.py`).
 |---|---|---|---|
 | 3020 '1' | SE3 | Fenno-Skan, SE3 side | `SE3_FI` |
 | 7000 '6' | FI1 | Fenno-Skan, FI side | `FI_SE3` |
-| 6701 '1' | NO4 | NO4–FI AC exchange, NO side | `NO_FI` |
-| 7100 '3' | FI1 | NO4–FI AC exchange, FI side | `FI_NO` |
-| 3360 '1' | SE3 | Konti-Skan (SE3–DK1) | `SE3_DK1` |
-| 5610 '1' | NO2 | Skagerrak (NO2–DK1) | `NO_DK` |
-| 5620 '1' | NO2 | NorNed (NO2–NL) | `NO_NL` |
-| 6701 '3' | NO4 | NO4–RU | `NO_RU` |
-| 7010 '1' | FI1 | FI–RU (Vyborg) | `FI_RU` |
-| 7020 '1' | FI1 | Estlink (FI–EE) | `FI_EE` |
-| 8500 '4' | SE4 | SE4–DK2 (Öresund, AC) | `SE4_DK2` |
-| 8600 '1' | SE4 | Baltic Cable (SE4–DE) | `SE_DE` |
-| 8700 '1' | SE4 | SwePol (SE4–PL) | `SE_PL` |
+| 6701 '1' | NO4 | NO4-FI AC exchange, NO side | `NO_FI` |
+| 7100 '3' | FI1 | NO4-FI AC exchange, FI side | `FI_NO` |
+| 3360 '1' | SE3 | Konti-Skan (SE3-DK1) | `SE3_DK1` |
+| 5610 '1' | NO2 | Skagerrak (NO2-DK1) | `NO_DK` |
+| 5620 '1' | NO2 | NorNed (NO2-NL) | `NO_NL` |
+| 6701 '3' | NO4 | NO4-RU | `NO_RU` |
+| 7010 '1' | FI1 | FI-RU (Vyborg) | `FI_RU` |
+| 7020 '1' | FI1 | Estlink (FI-EE) | `FI_EE` |
+| 8500 '4' | SE4 | SE4-DK2 (Öresund, AC) | `SE4_DK2` |
+| 8600 '1' | SE4 | Baltic Cable (SE4-DE) | `SE_DE` |
+| 8700 '1' | SE4 | SwePol (SE4-PL) | `SE_PL` |
 
-The first two pairs are links inside the modelled system. Fenno-Skan and the NO4–FI exchange
+The first two pairs are links inside the modelled system. Fenno-Skan and the NO4-FI exchange
 therefore cross a zone border without any branch, and their flow has to be added to the border
 flows.
 
@@ -87,22 +87,22 @@ flows.
 
 | Nord Pool border | Representation in N44 |
 |---|---|
-| NO1–NO2 | lines 5400–6000, 5401–5602, 5500–5603 |
-| NO1–NO3 | line 5100–6500 |
-| NO1–NO5 | lines 5101–5102, 5102–5103, 5103–5304 (×2), 5401–6001, 5402–6001 |
-| NO2–NO5 | line 5300–6100 and transformers 5601–6001, 6000–6001 |
-| NO3–NO4 | lines 6500–6700 (×2) |
-| NO1–SE3 | lines 3359–5101 (×2) |
-| NO3–SE2 | line 3244–6500 |
-| NO4–SE1 | line 3115–6701 |
-| NO4–SE2 | line 3701–6700 |
-| SE1–SE2 | lines 3100–3115, 3115–3245, 3115–3249 |
-| SE2–SE3 | lines 3000–3245 (×2), 3100–3200 (×3), 3100–3359 (×2) |
-| SE3–SE4 | lines 3200–8500, 3300–8500 (×2), 3359–8500 (×2) |
-| SE1–FI | line 3115–7100 |
-| SE3–FI | exchange-load pair 3020 / 7000 '6' |
-| NO4–FI | exchange-load pair 6701 '1' / 7100 '3' |
-| *(none)* | **artificial ties of the equivalent**, 3000–3115 (SE3–SE1) and 3249–7100 (SE2–FI) |
+| NO1-NO2 | lines 5400-6000, 5401-5602, 5500-5603 |
+| NO1-NO3 | line 5100-6500 |
+| NO1-NO5 | lines 5101-5102, 5102-5103, 5103-5304 (×2), 5401-6001, 5402-6001 |
+| NO2-NO5 | line 5300-6100 and transformers 5601-6001, 6000-6001 |
+| NO3-NO4 | lines 6500-6700 (×2) |
+| NO1-SE3 | lines 3359-5101 (×2) |
+| NO3-SE2 | line 3244-6500 |
+| NO4-SE1 | line 3115-6701 |
+| NO4-SE2 | line 3701-6700 |
+| SE1-SE2 | lines 3100-3115, 3115-3245, 3115-3249 |
+| SE2-SE3 | lines 3000-3245 (×2), 3100-3200 (×3), 3100-3359 (×2) |
+| SE3-SE4 | lines 3200-8500, 3300-8500 (×2), 3359-8500 (×2) |
+| SE1-FI | line 3115-7100 |
+| SE3-FI | exchange-load pair 3020 / 7000 '6' |
+| NO4-FI | exchange-load pair 6701 '1' / 7100 '3' |
+| *(none)* | artificial ties of the equivalent, 3000-3115 (SE3-SE1) and 3249-7100 (SE2-FI) |
 
 ## How the snapshots were built
 
@@ -120,7 +120,7 @@ zone, with consumption and production in MWh/h and the exchange on every border,
 external. Each hour was built in six steps.
 
 1. The 13 exchange loads are set to minus the Nord Pool exchange on their border, with Q from
-   a fixed power factor. Fenno-Skan and NO4–FI have one load on each side, with opposite
+   a fixed power factor. Fenno-Skan and NO4-FI have one load on each side, with opposite
    signs.
 2. The desired net interchange (PDES) of each area is set to the sum of its Nord Pool
    exchanges on borders inside the model.
@@ -163,13 +163,13 @@ maximum of 0.55 MW and 2.8 Mvar.
 
 The base case `N44_BC.raw` is not a solved case. At its own voltages, PQ buses balance to
 0.2 MW. Generator buses, however, show mismatches that are a constant percentage per area
-(−3.8 % in NO1, −1.75 % in NO2, …, −342 MW in total), because generation was rescaled per
+(−3.8 % in NO1, −1.75 % in NO2 and so on, −342 MW in total), because generation was rescaled per
 area after the last solution. See `docs/validation_log.md`.
 
 ## Nord Pool daily files
 
 These are the original Nord Pool exports for 2015. Row 0 is the title and row 1 holds the
-date and the column names. Then comes one row per hour, labelled `00 - 01` … `23 - 00`,
+date and the column names. Then comes one row per hour, labelled `00 - 01` to `23 - 00`,
 followed by `Min`, `Max` and `Total`. The Finnish consumption and production files are weekly
 tables, and only their first data column belongs to the day. The reader is
 `n44.io.nordpool.read_daily_sheet`.
@@ -179,7 +179,7 @@ likewise for NO and FI. Country aggregates such as `SE_NO` or `SE_FI` are kept, 
 border uses them.
 
 `A_B > 0` is an import into A from B. For example, `SE3_FI` = −454 and `FI_SE3` = +454 on
-2015-03-25 at 00–01.
+2015-03-25 at 00-01.
 
 The dataset paper calls the values measurements. It does not say whether exchanges are
 physical flows or scheduled (commercial) flows, so results compared with them are labelled
@@ -187,13 +187,13 @@ physical flows or scheduled (commercial) flows, so results compared with them ar
 
 Two days have a clock change.
 
-- On 2015-03-29 the clock skips 02:00–03:00, yet the row `02 - 03` exists. It holds Nord
+- On 2015-03-29 the clock skips 02:00-03:00, yet the row `02 - 03` exists. It holds Nord
   Pool's interpolation of the neighbouring hours (SE1 = 988, the mean of 996 and 980) and is
   left out of the daily totals, and the country totals are blank. Snapshot h2 of that day is
   therefore a synthetic hour.
-- On 2015-10-25 the hour 02:00–03:00 occurs twice, so the files have 25 rows. The toolbox used
-  the first 24. Snapshots h3–h23 of that day are therefore local hours 02–22 (h3 is the second
-  02–03), and 23:00–24:00 has no snapshot.
+- On 2015-10-25 the hour 02:00-03:00 occurs twice, so the files have 25 rows. The toolbox used
+  the first 24. Snapshots h3-h23 of that day are therefore local hours 02-22 (h3 is the second
+  02-03), and 23:00-24:00 has no snapshot.
 
 `PSSE_in_out.xlsx` gives, per hour and area, the scheduled production, consumption (which
 includes the exchange loads) and interchange (the PDES), and the values solved by PSS/E. Per
@@ -237,7 +237,7 @@ first time. Areas are the bidding zones by their EIC codes (`n44.io.entsoe.AREAS
 token the pipeline skips these steps and the rest still runs.
 
 Coverage is nearly complete. In 2015 the Swedish borders miss one day of offered capacity and
-three days of physical flows, and SE1–SE4 miss two days of load and four of wind. These gaps
+three days of physical flows, and SE1 to SE4 miss two days of load and four of wind. These gaps
 stay missing and are left out of the comparisons, except in the wind profile, which
 interpolates them. In 2025 a few minor production types are
 mostly empty (storage in Finland, solar in NO3, offshore wind in NO2) and count as zero, and
@@ -265,7 +265,7 @@ If you use the data, cite the dataset paper and the paper that first presented t
 
 - L. Vanfretti et al., "An open data repository and a data processing software toolset of an
   equivalent Nordic grid model matched to historical electricity market data", *Data in Brief*
-  11 (2017) 349–357, doi:10.1016/j.dib.2017.02.021.
+  11 (2017) 349-357, doi:10.1016/j.dib.2017.02.021.
 - L. Vanfretti, T. Rabuzin, M. Baudette, M. Murad, "iTesla Power Systems Library (iPSL): A
   Modelica library for phasor time-domain simulations", *SoftwareX* (2016),
   doi:10.1016/j.softx.2016.05.001.

@@ -1,6 +1,6 @@
 """Readers for the daily Excel files of the dataset.
 
-**Nord Pool files** (``Consumption_XX``, ``Production_XX``, ``Exchange_XX``; XX = FI, NO, SE)
+Nord Pool files (``Consumption_XX``, ``Production_XX``, ``Exchange_XX``; XX = FI, NO, SE)
 are the original Nord Pool exports for 2015, in MWh/h:
 
     row 0        title, e.g. "Exchange in MWh"
@@ -18,7 +18,7 @@ country totals. On 2015-10-25 the hour 02:00-03:00 occurs twice and the day has 
 original toolbox took the first 24 rows of every day, so on that day dataset hours 3-23 are
 local hours 02-22 and the last hour, 23-00, has no snapshot.
 
-**``PSSE_in_out.xlsx``** is the per-day summary written by the toolbox after running PSS/E.
+``PSSE_in_out.xlsx`` is the per-day summary written by the toolbox after running PSS/E.
 Per hour it has three columns with the scheduled and solved production, consumption and
 interchange of each area, the 13 exchange loads, and convergence and limit-check flags. Rows
 are located by their labels, because their positions differ between toolbox versions.

@@ -10,9 +10,9 @@ two different things:
 Values are per unit on SBASE and on the bus base voltages. Every branch is a two-port with
 admittances ``yff, yft, ytf, ytt`` (from = bus I, to = bus J):
 
-- **Non-transformer branch:** series admittance ``y = 1/(R + jX)``, half the charging ``B/2``
+- Non-transformer branch: series admittance ``y = 1/(R + jX)``, half the charging ``B/2``
   at each end, and the line shunts ``GI + jBI`` at bus I and ``GJ + jBJ`` at bus J.
-- **Two-winding transformer** (CW = CZ = CM = 1, no magnetizing admittance): ratio
+- Two-winding transformer (CW = CZ = CM = 1, no magnetizing admittance): ratio
   ``t1 = WINDV1 e^(j ANG1)`` at bus I, series ``y = 1/(R1-2 + jX1-2)`` and ratio ``t2 = WINDV2``
   at bus J. This gives ``yff = y/|t1|^2``, ``yft = -y/(conj(t1) t2)``, ``ytf = -y/(t1 t2)`` and
   ``ytt = y/t2^2``.

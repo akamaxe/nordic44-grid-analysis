@@ -1,15 +1,15 @@
 """Bidding zones, exchange loads, borders and cuts of the Nordic 44 model.
 
-**Zones.** The PSS/E area of each bus is its Nord Pool bidding zone (see data/README.md).
+Zones. The PSS/E area of each bus is its Nord Pool bidding zone (see data/README.md).
 
-**Borders.** A border between two modelled zones is the set of branches joining them, plus
-the exchange-load pairs that stand for links with no branch: Fenno-Skan (SE3–FI) and the
-NO4–FI exchange. Branch flows are taken at the metered end, as PSS/E measures area
-interchange. The equivalent model has two ties that no Nord Pool border matches: 3000–3115
-(SE3–SE1) and 3249–7100 (SE2–FI).
+Borders. A border between two modelled zones is the set of branches joining them, plus
+the exchange-load pairs that stand for links with no branch: Fenno-Skan (SE3-FI) and the
+NO4-FI exchange. Branch flows are taken at the metered end, as PSS/E measures area
+interchange. The equivalent model has two ties that no Nord Pool border matches: 3000-3115
+(SE3-SE1) and 3249-7100 (SE2-FI).
 
-**Cuts.** Svenska kraftnät's transfer sections (*snitt*) are defined here as flows between
-sets of Swedish zones. A cut therefore also collects the flow on the artificial SE3–SE1 tie.
+Cuts. Svenska kraftnät's transfer sections (*snitt*) are defined here as flows between
+sets of Swedish zones. A cut therefore also collects the flow on the artificial SE3-SE1 tie.
 
 The functions work on a branch flow table with columns ``i``, ``j``, ``metered``, ``p_i_mw``
 and ``p_j_mw``, as returned by ``n44.ybus.branch_flows`` or ``n44.results.branch_flows``.

@@ -1,11 +1,12 @@
 """Fit hourly snapshots to zonal data with the dataset's method (n44.fitting).
 
-1. **Check on 2015.** The method runs on the dataset's own Nord Pool data and the result is
+1. Check on 2015. The method runs on the dataset's own Nord Pool data and the result is
    compared with the dataset's snapshots: machine outputs, voltages and taps against the
    after_PF files, and border and cut flows against the annual run (script 08).
-2. **2025.** The same method on ENTSO-E data (script 18): actual load and generation of
-   each zone and the physical flows on every border and link. Gaps the download could not
-   fill are interpolated, and the hours affected are counted. The 2015 topology is kept.
+2. Snapshots of 2025. The same method runs on ENTSO-E data (script 18), with the actual load
+   and generation of each zone and the physical flows on every border and link. Gaps the
+   download could not fill are interpolated, and the hours affected are counted. The 2015
+   topology is kept.
 
 Writes results/fitting_check_2015.csv, the 2025 snapshot tables in
 data/processed/snapshots_2025/, the table of fitted hours results/annual/fit_2025.parquet

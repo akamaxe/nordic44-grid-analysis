@@ -2,21 +2,21 @@
 
 The conversion is exact for the Nordic 44 data, and docs/methods.md derives it.
 
-- **Network:** ``net.sn_mva = SBASE``, so per-unit values match PSS/E's. The bus index is the
+- Network: ``net.sn_mva = SBASE``, so per-unit values match PSS/E's. The bus index is the
   PSS/E bus number and ``vn_kv`` is BASKV.
-- **Lines:** 1 km long, with R, X and B converted to ohm and nF through Zb = BASKV^2/SBASE.
+- Lines: 1 km long, with R, X and B converted to ohm and nF through Zb = BASKV^2/SBASE.
   ``max_i_ka = RATEA / (sqrt(3) BASKV)``. Line shunts at each end become pandapower shunts
   tied to their line through ``parent_line`` and ``parent_end``. Change line statuses with
   ``set_branch_status``, which switches those shunts too.
-- **Two-winding transformers:** ``vn_hv_kv`` and ``vn_lv_kv`` are WINDV times BASKV of each
+- Two-winding transformers: ``vn_hv_kv`` and ``vn_lv_kv`` are WINDV times BASKV of each
   winding, and ``sn_mva`` is RATA1. ``vk_percent`` and ``vkr_percent`` are R1-2 and X1-2
   rescaled to ``sn_mva``. ``shift_degree`` is ANG1, with the sign flipped when winding 1 is
   the low-voltage side. There is no tap changer and no magnetizing branch. pandapower refers
   the impedance to the LV side through (vn_lv_kv / Vb_lv)^2 and places the ratio on the HV
   side. This reproduces the PSS/E t1:1 - Z - 1:t2 model whichever side winding 1 is on.
-- **Machines:** the swing bus becomes one ``ext_grid`` aggregating its in-service machines.
+- Machines: the swing bus becomes one ``ext_grid`` aggregating its in-service machines.
   Every other machine is a ``gen``.
-- **Loads:** constant power. ``kind`` is "exchange" for the 13 loads that stand for
+- Loads: constant power. ``kind`` is "exchange" for the 13 loads that stand for
   exchanges and "demand" for the rest.
 
 PSS/E identifiers are kept in ``psse_*`` columns, and branch ratings in ``rate_*_mva``.

@@ -1,20 +1,20 @@
 """Redispatch needed to make the 2015 market dispatch secure (question P4).
 
 For every hour, the cheapest-volume redispatch (``n44.redispatch``) that respects:
-- **N-0:** the intact network within RATE A;
-- **N-1:** additionally, every single outage within RATE B.
+- N-0: the intact network within RATE A;
+- N-1: also every single outage within RATE B.
 
 The starting point is each snapshot's dispatch: the scheduled output of every machine and
 the swing bus's output from the annual AC run.
 
-The redispatch is split into an **intra-zonal** part, a reshuffle between units of the same
-zone, and an **inter-zonal** part, the net change per zone, which is a countertrade between
+The redispatch is split into an intra-zonal part, a reshuffle between units of the same
+zone, and an inter-zonal part, the net change per zone, which is a countertrade between
 zones.
 
 A sample of hours is checked in AC after the redispatch, with a full N-1 by the
 reference-model solver.
 
-**Sensitivity.** The N-1 redispatch is solved again without the outage of the Sima
+Sensitivity. The N-1 redispatch is solved again without the outage of the Sima
 transformer (5300-5301), whose post-contingency limits come from the equivalent lumping NO5's
 hydro behind one transformer (README, question P3).
 

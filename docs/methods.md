@@ -50,7 +50,7 @@ reference one to machine precision.
 
 ### Per-unit system
 
-- PSS/E per-unit values are on SBASE = **1000 MVA** (not the usual 100) and on the bus base
+- PSS/E per-unit values are on SBASE = 1000 MVA (not the usual 100) and on the bus base
   voltage BASKV.
 - The pandapower network uses `net.sn_mva = 1000` and `bus.vn_kv = BASKV`, so its internal
   per-unit system is the same and the two admittance matrices can be compared entry by entry.
@@ -71,9 +71,9 @@ PSS/E gives R, X and the total charging B in per unit, plus a line shunt at each
 NXFRAT = 1, so line ratings are *current expressed as MVA* (√3 · BASKV · I), which is exactly
 what `max_i_ka` encodes.
 
-Line-end shunts matter. On 5101–5501, BI = −0.974 and BJ = +0.974 p.u., about ±974 Mvar, and
-without them the power balance at bus 5501 is off by 991.5 Mvar. This is one of the
-negative-control tests. pandapower lines cannot hold asymmetric end shunts, so they are
+Some line-end shunts are large. On 5101-5501, BI = −0.974 and BJ = +0.974 p.u., about
+±974 Mvar, and without them the power balance at bus 5501 is off by 991.5 Mvar (one of the
+negative-control tests). pandapower lines cannot hold asymmetric end shunts, so they are
 separate shunts, and every status change goes through `set_branch_status`, which switches
 them together with their line.
 
@@ -93,8 +93,8 @@ the ratio `n = t_hv / t_lv` and the per-unit impedance `z = |Z| · t_lv²`, prov
 `vk_percent = 100·|Z|·sn_mva/SBASE` (and likewise `vkr_percent` from R). In MATPOWER form
 (from = HV) this gives `Y_HH = y/t_hv²`, `Y_LL = y/t_lv²` and `Y_HL = −y/(t_hv·t_lv)`.
 
-This is the PSS/E matrix above, **whichever side winding 1 is on**. In N44 the tap is on the
-420 kV side for some transformers (5101–5100) and on the 300 kV side for others (5300–5301).
+This is the PSS/E matrix above, whichever side winding 1 is on. In N44 the tap is on the
+420 kV side for some transformers (5101-5100) and on the 300 kV side for others (5300-5301).
 The phase shift is applied on the HV side, so `shift_degree = ANG1` when winding 1 is HV and
 `−ANG1` otherwise. All ANG1 are zero in N44.
 
@@ -140,12 +140,12 @@ Loads are constant power (all IP, IQ, YP, YQ are zero). The 13 loads that stand 
 are tagged `kind = "exchange"` (see `n44.zones.EXCHANGE_LOADS` and the
 [data README](../data/README.md)).
 
-Branch flows are reported in PSS/E orientation (I → J) and, for lines, include the shunt of
-each end. On 5101–5501 this changes the loading from 21.5 % (series part only) to 58.8 %.
+Branch flows are reported in PSS/E orientation (from I to J) and, for lines, include the
+shunt of each end. On 5101-5501 this changes the loading from 21.5 % (series part only) to 58.8 %.
 Losses are ΣPG − ΣPL, so line-end shunt conductances count as branch losses.
 
 Area interchange and border flows use each tie's metered end. For non-transformer branches
-MET names the metered end, but for transformers **NMETR names the non-metered winding**.
+MET names the metered end, but for transformers NMETR names the non-metered winding.
 Reading it the other way round shifted the NO2/NO5 interchange by up to 3.4 MW
 ([validation log, entry 2](validation_log.md#2-transformer-metered-end-read-backwards-nmetr)).
 With the right convention, the interchange computed at PSS/E's voltages matches the
@@ -212,7 +212,7 @@ after the outage of branch $`k`$ is
 F_{m|k} = F_m + \mathrm{LODF}_{mk}\, F_k .
 ```
 
-LODF assumes fixed injections, but a line's end shunts trip with it. On line 5101–5501 they
+LODF assumes fixed injections, but a line's end shunts trip with it. On line 5101-5501 they
 draw +22.3 MW at one end and −21.6 MW at the other, and that change is added with the
 post-outage PTDF,
 
@@ -231,7 +231,7 @@ pre-contingency values. All 8,760 hours × 71 outages × 79 branches take about 
 ### AC contingency analysis
 
 pandapower needs about 0.1 s per contingency on this network, almost all of it converting
-tables. `n44.acpf` is a Newton–Raphson solver written on the reference admittance matrix of
+tables. `n44.acpf` is a Newton-Raphson solver written on the reference admittance matrix of
 `n44.ybus`, which is identical to pandapower's. An outage is a rank-two update of Ybus, so a
 line leaves with its end shunts, and reactive limits are applied as pandapower applies them.
 The solver handles a contingency in about 0.5 ms, which makes a full AC N-1 of every hour
@@ -251,8 +251,8 @@ The market dispatch is N-1 insecure in almost every hour, so a margin measured f
 be negative for reasons that have nothing to do with the cut. The margin is therefore measured
 from each hour's *secure state*, the market dispatch after the N-1 redispatch of script 15.
 
-The transfer goes between the two zones on either side of the cut (SE1→SE2, SE2→SE3,
-SE3→SE4), with generation shift keys proportional to each bus's mean 2015 output. Shifting
+The transfer goes between the two zones on either side of the cut (SE1->SE2, SE2->SE3,
+SE3->SE4), with generation shift keys proportional to each bus's mean 2015 output. Shifting
 generation in zones further away would let their own constraints set the cut's limit.
 
 The margin is the extra transfer the network takes before a critical element reaches its
@@ -273,7 +273,7 @@ loops through Norway and Finland.
 
 The capability and the market flow it is compared with are both the mean of the two ends of
 each crossing branch, lossless like the DC estimate. The cut flows of P1 and P2 are metered at
-one end, as PSS/E meters area interchange, and run 20–50 MW higher in the median hour (half
+one end, as PSS/E meters area interchange, and run 20-50 MW higher in the median hour (half
 the crossing branches' losses). Mixing the two would count hours that are above the
 capability only by those losses.
 
@@ -364,9 +364,9 @@ Each scenario in `config/scenarios/` changes every hourly case before it is solv
 
 | Scenario | Change |
 |---|---|
-| `ac_line` | a third Hjälta–Ringhals circuit (3100–3359), a copy of circuit 2, on the corridor where snitt 2 binds in the intact network (P2) |
+| `ac_line` | a third Hjälta-Ringhals circuit (3100-3359), a copy of circuit 2, on the corridor where snitt 2 binds in the intact network (P2) |
 | `hvdc` | a 1,200 MW VSC link on the same corridor, whose converters hold their bus voltage and whose set-point the redispatch chooses |
-| `ac_line_north` | a second Hjälta–Grundfors circuit (3100–3249), at the N-1 bottleneck north of Hjälta (P3, P4) |
+| `ac_line_north` | a second Hjälta-Grundfors circuit (3100-3249), at the N-1 bottleneck north of Hjälta (P3, P4) |
 | `hvdc_north` | the same VSC link from Grundfors (SE2) to Ringhals (SE3), bypassing the SE1/SE2 lines |
 | `north_load` | 1 to 10 GW of new industrial load at Porjus (SE1) and Grundfors (SE2), with the energy produced by the other zones |
 | `north_wind` | 5 GW of new load with new northern wind at Porjus and Grundfors, as a fixed 4 or 8 GW in every hour, and as 10 GW installed that follows 2015's hourly wind in SE1 and SE2 |
@@ -452,7 +452,7 @@ The steps were read off the files themselves. A before_PF case holds exactly the
 and machines of step 3, and between it and its after_PF case only the area-slack machines and
 the taps change. One rule shows only in the data, which is that the Finnish $`P_\mathrm{des}`$
 follows the Finnish exchange file where it disagrees with the Swedish one (48 hours on
-SE1–FI).
+SE1-FI).
 
 On the dataset's own Nord Pool data for 2015, every hour converges, and the result is
 compared with the dataset's snapshots in `results/fitting_check_2015.csv`. In 175 hours the
@@ -471,7 +471,7 @@ existed in 2015 keep their exchange loads (`zones.EXTERNAL_LINKS`). The three bu
 NordLink and North Sea Link from NO2 and NordBalt from SE4 (`zones.NEW_LINKS`), have no
 connection bus in the equivalent, so their export is added to their zone's consumption and
 spread over its loads. On the Feda exchange load, NordLink and North Sea Link would put up to
-3.4 GW on the radial branch 5600–5620, more than three times its rating.
+3.4 GW on the radial branch 5600-5620, more than three times its rating.
 
 Two departures from the toolbox follow from the data. ENTSO-E's zone balances do not match
 its flows exactly, and the area-slack buses absorb up to a few hundred megawatts in an hour

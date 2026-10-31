@@ -8,9 +8,9 @@
    snitt-2 transfer.
 
 Criteria, after an outage:
-- an **induced overload**: a branch above RATE B that was within RATE B before;
-- a **low voltage**: below 0.90 p.u.;
-- **no AC solution** at all.
+- an induced overload: a branch above RATE B that was within RATE B before;
+- a low voltage: below 0.90 p.u.;
+- no AC solution at all.
 
 Writes the arrays to results/n1/ (large, not committed), the summaries
 results/n1_{ranking,screening,crosscheck,hvdc_links}.csv and the figures

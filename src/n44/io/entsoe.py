@@ -8,14 +8,14 @@ message.
 Each response is cached as gzipped XML under data/raw/entsoe/<year>/, so a second run reads
 the disk only. A request spans at most one year, which is the API's limit.
 
-**Documents used** (codes of the API guide):
+Documents used (codes of the API guide):
 
 - A44 day-ahead prices, A65 total load (actual), A75 generation per production type
   (actual);
 - A11 physical flows, A09 scheduled commercial exchanges (all timeframes), A31 capacity offered to
   the day-ahead market (implicit allocation).
 
-**Time series.** A document holds one or more TimeSeries, each with Periods that start at a
+Time series. A document holds one or more TimeSeries, each with Periods that start at a
 UTC time and have a resolution (PT15M, PT30M or PT60M). Points are numbered from 1. In a
 curve of type A03 a point holds until the next one, so missing positions repeat the last
 value. Everything is averaged to hourly values on UTC hours, and ``to_hours`` then puts the

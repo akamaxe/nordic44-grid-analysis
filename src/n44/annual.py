@@ -2,7 +2,7 @@
 
 Each hour applies its snapshot values to a working copy of the base network and solves it
 from a flat start, with the controls PSS/E settled on held fixed: taps, area-slack outputs
-and voltage setpoints. The run therefore **reproduces PSS/E's solution** (the deviation is
+and voltage setpoints. The run therefore reproduces PSS/E's solution (the deviation is
 recorded per hour) and adds what the RAW files do not contain: terminal branch flows and
 loading, border and cut flows, and losses per zone. It adds no independent physics.
 
