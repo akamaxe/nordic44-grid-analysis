@@ -16,36 +16,26 @@ The full write-up, with every table and figure, is in [docs/report.md](docs/repo
 
 - The three tools agree. With exact transformer ratios, pandapower and PowerFactory 2024
   match to 5·10⁻⁸ p.u. and 3·10⁻⁴ MW, and both reproduce PSS/E to the rounding of its
-  files. PowerFactory's importer rounds transformer ratios to tap positions, which alone
-  moves 2.6 Mvar on some branches. The N-1 and DC-OPF results match as well.
+  files. The N-1 and DC-OPF results match as well.
 - The market dispatch of the equivalent is N-1 secure in only 324 hours of 2015. A full AC
   N-1 of every hour (8,760 h × 71 outages, about 622,000 cases at 0.5 ms each) finds 11.8 %
-  of the cases insecure. Most of them follow the loss of the aggregated Sima transformer in
-  NO5, one of the SE1/SE2 north-south lines, or an element of the NO1-NO2-NO5 interface.
+  of the cases insecure.
 - Snitt 2 (SE2->SE3) limits the north-south transfer. Its N-1 transfer capability is 3.2 GW
-  in the median hour, and the market flow is above it in 5,991 hours. The limit sits north
-  of the cut, on the Porjus-Grundfors-Hjälta lines, and not on the Hjälta-Ringhals circuits
-  where the intact network binds.
+  in the median hour, and the market flow is above it in 5,991 hours. The TSOs offered the
+  market a median of 6.5 GW on this cut in 2015, so the equivalent overstates the
+  congestion there.
 - Making the market dispatch N-1 secure takes 19.2 TWh of redispatch (5.6 % of demand),
   almost all of it countertrade from the north into SE3. One outage that only exists
-  because of how the equivalent aggregates plants accounts for 8.1 TWh, and the Swedish part
-  barely changes without it. Checked in AC on 110 hours, the redispatch needs 13 % more.
+  because of how the equivalent aggregates plants accounts for 8.1 TWh of it.
 - A second Hjälta-Grundfors circuit, at the N-1 bottleneck, cuts the N-1 redispatch by 23 %
   and lifts snitt 2's median N-1 capability from 3.2 to 5.0 GW. A third Hjälta-Ringhals
-  circuit, where the intact network binds, leaves it unchanged (+0.3 %).
-- New industrial load in SE1/SE2 relieves the corridors up to about 3 GW. The 2015 network
-  can take 6 to 8 GW of it before redispatch can no longer secure every hour.
-- A DC screening from each hour's AC flows plus LODF catches the overloads but cannot judge
-  voltage. At a 90 % threshold it misses 40 of 62,548 overloads and spares 65 % of the AC
-  runs.
-- ENTSO-E data back the equivalent's limits on snitt 1 and snitt 4, where the capacity the
-  TSOs gave the market in 2015 is within 13 % of the equivalent's N-1 capability. On
-  snitt 2 the real capacity was twice as large (6.5 against 3.2 GW), so the equivalent
-  overstates the congestion there.
-- The 2015 grid cannot carry the flows of 2025 securely. With snapshots of 2025 built from
-  ENTSO-E data using the dataset's own method, snitt 2's mean flow rises from 3.6 to
-  5.6 GW, the dispatch is N-1 secure in 121 hours instead of 324, and in 17 winter hours
-  even the intact grid has no AC solution.
+  circuit, where the intact network binds, changes almost nothing (+0.3 %).
+- The 2015 grid cannot carry the flows of 2025 securely. With 2025 snapshots built from
+  ENTSO-E data, snitt 2's mean flow rises from 3.6 to 5.6 GW and the dispatch is N-1
+  secure in 121 hours instead of 324.
+
+The report also covers new industrial load in the north, a DC screening of the N-1 cases
+and a comparison with ENTSO-E's 2015 capacities, flows and prices.
 
 ## Results in figures
 
